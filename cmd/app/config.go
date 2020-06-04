@@ -53,12 +53,12 @@ func configureNew(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	cfg := config.Environ()
-	marshal, err := yaml.Marshal(cfg)
-	if err != nil {
+	var buffer bytes.Buffer
+	if err := yaml.NewEncoder(&buffer).Encode(cfg); err != nil {
 		return err
 	}
 	viper.SetConfigType("yaml")
-	if err := viper.ReadConfig(bytes.NewReader(marshal)); err != nil {
+	if err := viper.ReadConfig(&buffer); err != nil {
 		return err
 	}
 	fmt.Println("Loading default configuration succeeded")

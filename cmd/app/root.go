@@ -24,8 +24,6 @@ import (
 	"stone/cmd/config"
 )
 
-const cfgPath = "config/config.yaml"
-
 var cfgFile string
 
 func NewServerCommand() *cobra.Command {
@@ -35,7 +33,7 @@ func NewServerCommand() *cobra.Command {
 		Long:  `Stone service.`,
 	}
 	cmd.AddCommand(NewServerCmd(), NewMigrateCmd(), NewConfigCmd())
-	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", cfgPath, "config file (default is $HOME/config.yaml)")
+	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", config.DefaultPath, "config file (default is $HOME/config.yaml)")
 	return cmd
 }
 
