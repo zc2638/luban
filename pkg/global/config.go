@@ -1,13 +1,15 @@
 /**
- * Created by zc on 2020/6/4.
+ * Created by zc on 2020/6/7.
  */
-package config
+package global
 
-import "stone/pkg/database"
-
-const DefaultPath = "config.yaml"
+import (
+	"stone/pkg/database"
+	"stone/pkg/serve"
+)
 
 type Config struct {
+	Serve    serve.Config    `json:"serve"`
 	Database database.Config `json:"database"`
 }
 

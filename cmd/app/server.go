@@ -18,6 +18,8 @@ package app
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"stone/handler/api"
+	"stone/pkg/serve"
 )
 
 // serverCmd represents the server command
@@ -26,11 +28,18 @@ func NewServerCmd() *cobra.Command {
 		Use:   "server",
 		Short: "Run server",
 		Long:  `Run server`,
-		Run:   server,
+		RunE:  server,
 	}
 	return cmd
 }
 
-func server(cmd *cobra.Command, args []string) {
-	fmt.Println("server called")
+func server(cmd *cobra.Command, args []string) error {
+	cfg, err := ParseConfig()
+	if err != nil {
+		return err
+	}
+	server := serve.New(&cfg.Serve)
+	server.Handler = api.New()
+	fmt.Println("Listen on", server.Addr)
+	return server.Run()
 }

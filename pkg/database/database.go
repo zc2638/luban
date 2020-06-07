@@ -27,7 +27,7 @@ func (c *Config) Clone() *Config {
 	}
 }
 
-func NewDatabase(cfg *Config) (*gorm.DB, error) {
+func New(cfg *Config) (*gorm.DB, error) {
 	dsn := buildMysqlDsn(cfg)
 	db, err := gorm.Open("mysql", dsn)
 	if err != nil {

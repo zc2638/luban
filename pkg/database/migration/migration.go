@@ -16,7 +16,7 @@ func InitDatabase(cfg *database.Config) error {
 	}
 	dbConfig := cfg.Clone()
 	dbConfig.DBName = ""
-	db, err := database.NewDatabase(dbConfig)
+	db, err := database.New(dbConfig)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func InitDatabase(cfg *database.Config) error {
 
 // auto migrate table struct
 func InitTable(cfg *database.Config) error {
-	db, err := database.NewDatabase(cfg)
+	db, err := database.New(cfg)
 	if err != nil {
 		return err
 	}

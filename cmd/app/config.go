@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 	"os"
-	"stone/cmd/config"
+	"stone/pkg/global"
 )
 
 // configCmd represents the config command
@@ -52,7 +52,7 @@ func configureNew(cmd *cobra.Command, args []string) error {
 	if os.IsExist(err) {
 		return err
 	}
-	cfg := config.Environ()
+	cfg := global.Environ()
 	var buffer bytes.Buffer
 	if err := yaml.NewEncoder(&buffer).Encode(cfg); err != nil {
 		return err

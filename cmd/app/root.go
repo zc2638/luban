@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
-	"stone/cmd/config"
+	"stone/pkg/global"
 )
 
 var cfgFile string
@@ -33,11 +33,11 @@ func NewServerCommand() *cobra.Command {
 		Long:  `Stone service.`,
 	}
 	cmd.AddCommand(NewServerCmd(), NewMigrateCmd(), NewConfigCmd())
-	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", config.DefaultPath, "config file (default is $HOME/config.yaml)")
+	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", global.DefaultPath, "config file (default is $HOME/config.yaml)")
 	return cmd
 }
 
-func ParseConfig() (*config.Config, error) {
+func ParseConfig() (*global.Config, error) {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
@@ -54,7 +54,7 @@ func ParseConfig() (*config.Config, error) {
 		return nil, err
 	}
 	fmt.Println("Using config file:", viper.ConfigFileUsed())
-	cfg := config.Environ()
+	cfg := global.Environ()
 	err := viper.Unmarshal(cfg)
 	return cfg, err
 }
