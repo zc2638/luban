@@ -18,6 +18,7 @@ package app
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"stone/global"
 	"stone/handler/api"
 	"stone/pkg/serve"
 )
@@ -37,6 +38,9 @@ func NewServerCmd() *cobra.Command {
 func server(cmd *cobra.Command, args []string) error {
 	cfg, err := ParseConfig()
 	if err != nil {
+		return err
+	}
+	if err := global.InitConfig(cfg); err != nil {
 		return err
 	}
 	server := serve.New(&cfg.Serve)

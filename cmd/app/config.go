@@ -23,8 +23,7 @@ import (
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v2"
 	"os"
-	"stone/pkg/global"
-	"stone/pkg/logger"
+	"stone/global"
 )
 
 // configCmd represents the config command

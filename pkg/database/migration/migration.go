@@ -30,9 +30,12 @@ func InitTable(cfg *database.Config) error {
 	if err != nil {
 		return err
 	}
-	for _, v := range tables() {
-		if !db.HasTable(v) {
-			db.CreateTable(v)
+	for k, v := range tables() {
+		if db.HasTable(k) {
+			continue
+		}
+		if err := db.Exec(v + options).Error; err != nil {
+			return err
 		}
 	}
 	return nil

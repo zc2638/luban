@@ -20,7 +20,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"stone/pkg/global"
+	"stone/global"
 )
 
 var cfgFile string
