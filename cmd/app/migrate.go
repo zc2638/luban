@@ -17,18 +17,18 @@ package app
 
 import (
 	"fmt"
-	"stone/pkg/database/migration"
-
 	"github.com/spf13/cobra"
+	"stone/pkg/database/migration"
 )
 
 // migrateCmd represents the migrate command
 func NewMigrateCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "migrate",
-		Short: "database migration",
-		Long:  `database migration.`,
-		RunE:  migrate,
+		Use:          "migrate",
+		Short:        "database migration",
+		Long:         `database migration.`,
+		RunE:         migrate,
+		SilenceUsage: true,
 	}
 	return cmd
 }

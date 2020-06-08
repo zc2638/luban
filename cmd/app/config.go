@@ -24,6 +24,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"os"
 	"stone/pkg/global"
+	"stone/pkg/logger"
 )
 
 // configCmd represents the config command
@@ -34,10 +35,11 @@ func NewConfigCmd() *cobra.Command {
 		Long:  `config operation.`,
 	}
 	generateCmd := &cobra.Command{
-		Use:   "new",
-		Short: "config generate operation",
-		Long:  `config generate operation.`,
-		RunE:   configureNew,
+		Use:          "new",
+		Short:        "config generate operation",
+		Long:         `config generate operation.`,
+		RunE:         configureNew,
+		SilenceUsage: true,
 	}
 	cmd.AddCommand(generateCmd)
 	return cmd

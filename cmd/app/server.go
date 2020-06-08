@@ -25,10 +25,11 @@ import (
 // serverCmd represents the server command
 func NewServerCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "server",
-		Short: "Run server",
-		Long:  `Run server`,
-		RunE:  server,
+		Use:          "server",
+		Short:        "Run server",
+		Long:         `Run server`,
+		RunE:         server,
+		SilenceUsage: true,
 	}
 	return cmd
 }
