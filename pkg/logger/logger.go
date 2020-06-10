@@ -18,27 +18,19 @@ var (
 
 func init() {
 	if infoE == nil {
-		infoE = NewEngine(
-			SetLevel(logrus.InfoLevel),
-			AddHook(hook.NewHook("info")),
-		)
+		infoE = NewEngine(SetLevel(logrus.InfoLevel))
 	}
 	if warnE == nil {
-		warnE = NewEngine(
-			SetLevel(logrus.WarnLevel),
-			AddHook(hook.NewHook("warn")),
-		)
+		warnE = NewEngine(SetLevel(logrus.WarnLevel))
 	}
 	if errorE == nil {
-		errorE = NewEngine(
-			SetLevel(logrus.ErrorLevel),
-			AddHook(hook.NewHook("error")),
-		)
+		errorE = NewEngine(SetLevel(logrus.ErrorLevel))
+		errorE.AddHook(hook.NewFrameContextHook(0, nil))
 	}
 }
 
 type Config struct {
-	Output       string   `json:"output"`       // 文件输出路径，不填输出终端
+	Output string `json:"output"` // 文件输出路径，不填输出终端
 }
 
 func New(config *Config) {
@@ -50,6 +42,7 @@ func New(config *Config) {
 		warnE.AddHook(hook.NewHook("warn").SetDir(config.Output))
 		errorE.AddHook(hook.NewHook("error").SetDir(config.Output))
 	}
+	errorE.AddHook(hook.NewFrameContextHook(30, nil))
 }
 
 func NewEngine(options ...Option) *logrus.Logger {

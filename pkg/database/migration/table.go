@@ -122,8 +122,9 @@ const (
 
 	userTable = `CREATE TABLE ` + userTableName + ` (
   uid varchar(32) NOT NULL COMMENT '用户唯一标识',
-  nickname varchar(50) NOT NULL COMMENT '昵称',
-  email varchar(100) DEFAULT NULL COMMENT '邮箱',
+  username varchar(50) NOT NULL COMMENT '用户名',
+  email varchar(100) NOT NULL COMMENT '邮箱',
+  avatar varchar(255) DEFAULT NULL COMMENT '头像',
   pwd varchar(100) NOT NULL COMMENT '密码',
   salt varchar(10) NOT NULL COMMENT '盐值',
   ` + createdAt + updatedAt + deletedAt + `

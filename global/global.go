@@ -8,3 +8,7 @@ import "github.com/jinzhu/gorm"
 func DB() *gorm.DB {
 	return db
 }
+
+func Cfg() *Config {
+	return config
+}

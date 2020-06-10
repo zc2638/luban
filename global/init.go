@@ -8,8 +8,11 @@ import (
 	"stone/pkg/database"
 )
 
+var config *Config
+
 // InitConfig Initialize all used configurations
 func InitConfig(cfg *Config) error {
+	config = cfg
 	err := initDatabase(&cfg.Database)
 	return err
 }

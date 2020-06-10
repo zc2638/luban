@@ -5,19 +5,35 @@ package errs
 
 import "github.com/pkg/errors"
 
-var (
+func New(message string) error {
+	return errors.New(message)
+}
+
+type Error string
+
+func (e Error) Error() string {
+	return string(e)
+}
+
+func (e Error) With(err error) error {
+	return errors.Wrap(err, e.Error())
+}
+
+const (
+	// ErrBodyParse is returned when body parse error
+	ErrBodyParse = Error("Body parameter format error")
 	// ErrInvalidToken is returned when the api request token is invalid.
-	ErrInvalidToken = errors.New("Invalid or missing token")
+	ErrInvalidToken = Error("Invalid or missing token")
 
 	// ErrUnauthorized is returned when the user is not authorized.
-	ErrUnauthorized = errors.New("Unauthorized")
+	ErrUnauthorized = Error("Unauthorized")
 
 	// ErrForbidden is returned when user access is forbidden.
-	ErrForbidden = errors.New("Forbidden")
+	ErrForbidden = Error("Forbidden")
 
 	// ErrNotFound is returned when a resource is not found.
-	ErrNotFound = errors.New("Not Found")
+	ErrNotFound = Error("Not Found")
 
 	// ErrNotImplemented is returned when an endpoint is not implemented.
-	ErrNotImplemented = errors.New("Not Implemented")
+	ErrNotImplemented = Error("Not Implemented")
 )

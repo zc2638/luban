@@ -88,8 +88,9 @@ type SpaceRule struct {
 
 type User struct {
 	UID      string `json:"uid"`      // 用户标识
-	Nickname string `json:"nickname"` // 昵称
+	Username string `json:"username"` // 用户名
 	Email    string `json:"email"`    // 邮箱
+	Avatar   string `json:"avatar"`   // 头像
 	Pwd      string `json:"pwd"`      // 密码
 	Salt     string `json:"salt"`     // 盐值
 	BaseTimeWithDelete

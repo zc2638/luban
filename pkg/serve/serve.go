@@ -15,7 +15,8 @@ import (
 )
 
 type Config struct {
-	Port int `json:"port"`
+	Port   int    `json:"port"`
+	Secret string `json:"secret"`
 }
 
 type Server struct {
