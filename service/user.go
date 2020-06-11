@@ -18,7 +18,7 @@ type userService struct{}
 func (s *userService) FindByEmail(email string) (*store.User, bool) {
 	var user store.User
 	global.DB().Where(store.User{Email: email}).First(&user)
-	if global.DB().NewRecord(user) {
+	if user.UID == "" {
 		return nil, false
 	}
 	return &user, true

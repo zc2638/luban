@@ -1,10 +1,9 @@
 /**
  * Created by zc on 2020/6/10.
  */
-package middleware
+package api
 
 import (
-	"context"
 	"net/http"
 	"stone/global"
 	"stone/pkg/ctr"
@@ -23,7 +22,7 @@ func JwtAuth(next http.Handler) http.Handler {
 			return
 		}
 		next.ServeHTTP(w, r.WithContext(
-			ctr.WithUser(context.Background(), &claims.User),
+			ctr.ContextWithUser(r.Context(), &claims.User),
 		))
 	}
 	return http.HandlerFunc(fn)

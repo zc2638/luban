@@ -28,7 +28,8 @@ func Register() http.HandlerFunc {
 		}
 		user = &store.User{
 			Username: params.Username,
-
+			Email:    params.Email,
+			Pwd:      params.Password,
 		}
 		if err := service.New().User().Create(user); err != nil {
 			ctr.BadRequest(w, err)
@@ -65,5 +66,16 @@ func Login() http.HandlerFunc {
 			Email:    user.Email,
 			Token:    token,
 		})
+	}
+}
+
+func Info() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user, ok := ctr.ContextUserFrom(r.Context())
+		if !ok {
+			ctr.Unauthorized(w, errs.ErrUnauthorized)
+			return
+		}
+		ctr.OK(w, user)
 	}
 }

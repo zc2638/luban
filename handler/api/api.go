@@ -18,11 +18,23 @@ func New() http.Handler {
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		ctr.Str(w, "Hello Stone!")
 	})
-	mux.Route("/auth", authRoute)
+	mux.Route("/v1", v1)
 	return mux
 }
 
-func authRoute(mux chi.Router) {
-	mux.Post("/register", auth.Register())
-	mux.Post("/login", auth.Login())
+func v1(r chi.Router) {
+	r.Route("/auth", authRoute)
+	r.Group(func(r chi.Router) {
+		r.Use(JwtAuth)
+		r.Route("/user", userRoute)
+	})
+}
+
+func authRoute(r chi.Router) {
+	r.Post("/register", auth.Register())
+	r.Post("/login", auth.Login())
+}
+
+func userRoute(r chi.Router) {
+	r.Get("/", auth.Info())
 }

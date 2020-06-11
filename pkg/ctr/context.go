@@ -5,16 +5,17 @@ package ctr
 
 import (
 	"context"
-	"stone/global"
 )
 
+const ContextUserKey = "user"
+
 // WithUser returns a copy of parent in which the user value is set
-func WithUser(parent context.Context, user *JwtUserInfo) context.Context {
-	return context.WithValue(parent, global.ContextUserKey, user)
+func ContextWithUser(parent context.Context, user *JwtUserInfo) context.Context {
+	return context.WithValue(parent, ContextUserKey, user)
 }
 
 // UserFrom returns the value of the user key on the ctx
-func UserFrom(ctx context.Context) (*JwtUserInfo, bool) {
-	user, ok := ctx.Value(global.ContextUserKey).(*JwtUserInfo)
+func ContextUserFrom(ctx context.Context) (*JwtUserInfo, bool) {
+	user, ok := ctx.Value(ContextUserKey).(*JwtUserInfo)
 	return user, ok
 }
