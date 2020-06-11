@@ -4,6 +4,7 @@
 package service
 
 import (
+	"context"
 	"crypto/md5"
 	"encoding/base64"
 	"github.com/google/uuid"
@@ -15,19 +16,19 @@ import (
 
 type userService struct{}
 
-func (s *userService) FindByEmail(email string) (*store.User, bool) {
+func (s *userService) FindByEmail(ctx context.Context, email string) (*store.User, error) {
 	var user store.User
-	global.DB().Where(store.User{Email: email}).First(&user)
-	if user.UID == "" {
-		return nil, false
+	db := global.DB().Where(store.User{Email: email}).First(&user)
+	if db.Error != nil {
+		return nil, db.Error
 	}
-	return &user, true
+	return &user, nil
 }
 
-func (s *userService) FindByNameAndPwd(username, password string) (*store.User, error) {
-	user, ok := s.FindByEmail(username)
-	if !ok {
-		return nil, errs.New("Invalid username or password")
+func (s *userService) FindByNameAndPwd(ctx context.Context, username, password string) (*store.User, error) {
+	user, err := s.FindByEmail(ctx, username)
+	if err != nil {
+		return nil, errs.Error("Invalid username or password").With(err)
 	}
 	h := md5.New()
 	h.Write([]byte(password))
@@ -39,7 +40,15 @@ func (s *userService) FindByNameAndPwd(username, password string) (*store.User, 
 	return user, nil
 }
 
-func (s *userService) Create(user *store.User) error {
+func (s *userService) Create(ctx context.Context, user *store.User) error {
+	// check if the user name is duplicate
+	user, err := s.FindByEmail(ctx, user.Email)
+	if err != nil {
+		return err
+	}
+	if user.UID != "" {
+		return errs.New("Duplicate email")
+	}
 	user.UID = uuid.New().String()
 	user.Salt = utilx.RandomStr(6)
 	h := md5.New()

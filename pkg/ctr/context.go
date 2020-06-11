@@ -5,17 +5,21 @@ package ctr
 
 import (
 	"context"
+	"stone/pkg/errs"
 )
 
 const ContextUserKey = "user"
 
-// WithUser returns a copy of parent in which the user value is set
+// ContextWithUser returns a copy of parent in which the user value is set
 func ContextWithUser(parent context.Context, user *JwtUserInfo) context.Context {
 	return context.WithValue(parent, ContextUserKey, user)
 }
 
-// UserFrom returns the value of the user key on the ctx
-func ContextUserFrom(ctx context.Context) (*JwtUserInfo, bool) {
+// ContextUserFrom returns the value of the user key on the ctx
+func ContextUserFrom(ctx context.Context) (*JwtUserInfo, error) {
 	user, ok := ctx.Value(ContextUserKey).(*JwtUserInfo)
-	return user, ok
+	if !ok {
+		return nil, errs.ErrUnauthorized
+	}
+	return user, nil
 }

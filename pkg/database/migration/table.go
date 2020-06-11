@@ -95,6 +95,7 @@ const (
 	spaceTable = `CREATE TABLE ` + spaceTableName + ` (
   sid varchar(32) NOT NULL COMMENT '空间唯一标识',
   title varchar(255) NOT NULL COMMENT '标题',
+  description varchar(255) DEFAULT NULL COMMENT '描述',
   owner varchar(32) NOT NULL COMMENT '拥有者标识',
   ` + createdAt + updatedAt + deletedAt + `
   PRIMARY KEY (sid),
@@ -130,5 +131,6 @@ const (
   ` + createdAt + updatedAt + deletedAt + `
   PRIMARY KEY (uid),
   UNIQUE KEY uix_user_uid (uid),
+  UNIQUE KEY uix_user_email (email),
   ` + deletedAtKey + `)`
 )

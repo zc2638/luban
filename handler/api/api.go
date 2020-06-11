@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/cors"
 	"net/http"
 	"stone/handler/api/auth"
+	"stone/handler/api/space"
 	"stone/pkg/ctr"
 )
 
@@ -22,19 +23,32 @@ func New() http.Handler {
 	return mux
 }
 
+// v1 handle v1 version routing
 func v1(r chi.Router) {
 	r.Route("/auth", authRoute)
 	r.Group(func(r chi.Router) {
 		r.Use(JwtAuth)
 		r.Route("/user", userRoute)
+		r.Route("/space", spaceRoute)
 	})
 }
 
+// authRoute handle auth routing related
 func authRoute(r chi.Router) {
 	r.Post("/register", auth.Register())
 	r.Post("/login", auth.Login())
 }
 
+// userRoute handle user routing related
 func userRoute(r chi.Router) {
 	r.Get("/", auth.Info())
+}
+
+// spaceRoute handle space routing related
+func spaceRoute(r chi.Router) {
+	r.Get("/", space.List())
+	r.Post("/", space.Create())
+	r.Get("/{id}", space.Find())
+	r.Put("/{id}", space.Update())
+	r.Delete("/{id}", space.Delete())
 }

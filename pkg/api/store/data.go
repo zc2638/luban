@@ -16,10 +16,10 @@ type BaseTimeWithDelete struct {
 }
 
 type App struct {
-	AppID string `json:"app_id"` // 应用标识
-	SID   string `json:"sid"`    // 空间标识
-	Title string `json:"title"`  // 标题
-	Desc  string `json:"desc"`   // 描述
+	AppID       string `json:"app_id"`                // 应用标识
+	SID         string `json:"sid" gorm:"column:sid"` // 空间标识
+	Title       string `json:"title"`                 // 标题
+	Description string `json:"description"`           // 描述
 	BaseTimeWithDelete
 }
 
@@ -46,12 +46,12 @@ type ConfigRuleRelate struct {
 }
 
 type Rule struct {
-	RuleID  string `json:"rule_id"` // 规则标识
-	UID     string `json:"uid"`     // 用户标识
-	Title   string `json:"title"`   // 标题
-	Desc    string `json:"desc"`    // 描述
-	Content string `json:"content"` // 规则内容
-	Version string `json:"version"` // 版本
+	RuleID      string `json:"rule_id"`               // 规则标识
+	UID         string `json:"uid" gorm:"column:uid"` // 用户标识
+	Title       string `json:"title"`                 // 标题
+	Description string `json:"description"`           // 描述
+	Content     string `json:"content"`               // 规则内容
+	Version     string `json:"version"`               // 版本
 	BaseTimeWithDelete
 }
 
@@ -63,35 +63,36 @@ type RuleRecord struct {
 }
 
 type Space struct {
-	SID   string `json:"sid"`   // 空间标识
-	Title string `json:"title"` // 标题
-	Owner string `json:"owner"` // 所有人标识
+	SID         string `json:"sid" gorm:"column:sid"` // 空间标识
+	Title       string `json:"title"`                 // 标题
+	Description string `json:"description"`           // 描述
+	Owner       string `json:"owner"`                 // 所有人标识
 	BaseTimeWithDelete
 }
 
 type SpaceAccess struct {
-	SID    string `json:"sid"`    // 空间标识
-	UID    string `json:"uid"`    // 用户标识
-	Access string `json:"access"` // 空间权限集合
+	SID    string `json:"sid" gorm:"column:sid"` // 空间标识
+	UID    string `json:"uid" gorm:"column:uid"` // 用户标识
+	Access string `json:"access"`                // 空间权限集合
 	BaseTime
 }
 
 type SpaceRule struct {
-	SpaceRuleID string `json:"space_rule_id"` // 空间规则标识
-	SID         string `json:"sid"`           // 空间标识
-	Title       string `json:"title"`         // 标题
-	Desc        string `json:"desc"`          // 描述
-	Content     string `json:"content"`       // 规则内容
-	CreateFrom  string `json:"create_from"`   // 创建来源用户标识
+	SpaceRuleID string `json:"space_rule_id"`         // 空间规则标识
+	SID         string `json:"sid" gorm:"column:sid"` // 空间标识
+	Title       string `json:"title"`                 // 标题
+	Description string `json:"description"`           // 描述
+	Content     string `json:"content"`               // 规则内容
+	CreateFrom  string `json:"create_from"`           // 创建来源用户标识
 	BaseTimeWithDelete
 }
 
 type User struct {
-	UID      string `json:"uid"`      // 用户标识
-	Username string `json:"username"` // 用户名
-	Email    string `json:"email"`    // 邮箱
-	Avatar   string `json:"avatar"`   // 头像
-	Pwd      string `json:"pwd"`      // 密码
-	Salt     string `json:"salt"`     // 盐值
+	UID      string `json:"uid" gorm:"column:uid"` // 用户标识
+	Username string `json:"username"`              // 用户名
+	Email    string `json:"email"`                 // 邮箱
+	Avatar   string `json:"avatar"`                // 头像
+	Pwd      string `json:"pwd"`                   // 密码
+	Salt     string `json:"salt"`                  // 盐值
 	BaseTimeWithDelete
 }

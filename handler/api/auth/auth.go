@@ -4,12 +4,12 @@
 package auth
 
 import (
+	"context"
 	"net/http"
 	"stone/global"
 	"stone/pkg/api"
 	"stone/pkg/api/store"
 	"stone/pkg/ctr"
-	"stone/pkg/errs"
 	"stone/service"
 )
 
@@ -20,22 +20,16 @@ func Register() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
-		// check if the user name is duplicate
-		user, ok := service.New().User().FindByEmail(params.Email)
-		if ok {
-			ctr.BadRequest(w, errs.New("Duplicate email"))
-			return
-		}
-		user = &store.User{
+		user := &store.User{
 			Username: params.Username,
 			Email:    params.Email,
 			Pwd:      params.Password,
 		}
-		if err := service.New().User().Create(user); err != nil {
+		if err := service.New().User().Create(context.Background(), user); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
-		ctr.Str(w, "ok")
+		ctr.Success(w)
 	}
 }
 
@@ -46,7 +40,7 @@ func Login() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
-		user, err := service.New().User().FindByNameAndPwd(params.Username, params.Password)
+		user, err := service.New().User().FindByNameAndPwd(context.Background(), params.Username, params.Password)
 		if err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -71,9 +65,9 @@ func Login() http.HandlerFunc {
 
 func Info() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, ok := ctr.ContextUserFrom(r.Context())
-		if !ok {
-			ctr.Unauthorized(w, errs.ErrUnauthorized)
+		user, err := ctr.ContextUserFrom(r.Context())
+		if err != nil {
+			ctr.BadRequest(w, err)
 			return
 		}
 		ctr.OK(w, user)

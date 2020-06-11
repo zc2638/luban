@@ -8,11 +8,18 @@ import (
 	"net/http"
 )
 
+// Success writes ok message to the response.
+func Success(w http.ResponseWriter) {
+	Str(w, "ok")
+}
+
+// Str writes the string message to the response.
 func Str(w http.ResponseWriter, str string) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(str))
 }
 
+// OK writes the json-encoded data to the response.
 func OK(w http.ResponseWriter, v interface{}) {
 	JSON(w, v, http.StatusOK)
 }

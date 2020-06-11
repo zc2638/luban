@@ -9,6 +9,7 @@ import (
 	"stone/pkg/errs"
 )
 
+// JSONParseReader decode Reader to any struct
 func JSONParseReader(rc io.ReadCloser, v interface{}) error {
 	defer rc.Close()
 	if err := json.NewDecoder(rc).Decode(v); err != nil {

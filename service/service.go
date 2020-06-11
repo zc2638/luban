@@ -12,3 +12,7 @@ func New() Interface {
 func (s *Service) User() UserService {
 	return &userService{}
 }
+
+func (s *Service) Space() SpaceService {
+	return &spaceService{}
+}

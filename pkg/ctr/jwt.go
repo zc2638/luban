@@ -19,11 +19,13 @@ type JwtUserInfo struct {
 	Email    string `json:"email"`
 }
 
+// JwtCreate returns the JWT token by claims and secret
 func JwtCreate(claims JwtClaims, secret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(secret))
 }
 
+// JwtParse returns the claims by JWT token and secret
 func JwtParse(tokenStr string, secret string) (*JwtClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenStr, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		// validate the signing method

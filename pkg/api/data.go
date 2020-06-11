@@ -19,3 +19,8 @@ type LoginResult struct {
 	Email    string `json:"email"`
 	Token    string `json:"token"`
 }
+
+type SpaceParams struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+}
