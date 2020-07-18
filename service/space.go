@@ -6,9 +6,9 @@ package service
 import (
 	"context"
 	"github.com/google/uuid"
-	"stone/global"
-	"stone/pkg/api/store"
-	"stone/pkg/ctr"
+	"luban/global"
+	"luban/pkg/api/store"
+	"luban/pkg/ctr"
 )
 
 type spaceService struct{}

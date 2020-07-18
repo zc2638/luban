@@ -16,8 +16,8 @@ limitations under the License.
 package main
 
 import (
+	"luban/cmd/app"
 	"os"
-	"stone/cmd/app"
 )
 
 func main() {

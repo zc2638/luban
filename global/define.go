@@ -6,3 +6,5 @@ package global
 const DefaultPath = "config.yaml"
 
 const HeaderTokenKey = "Stone-Token"
+
+const DefaultJwtSecret = "Stone"

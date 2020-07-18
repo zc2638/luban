@@ -4,16 +4,18 @@
 package global
 
 import (
-	"stone/pkg/database"
-	"stone/pkg/serve"
+	"luban/pkg/database"
+	"luban/pkg/server"
 )
 
 type Config struct {
-	Serve    serve.Config    `json:"serve"`
-	Database database.Config `json:"database"`
+	Server   server.Config   `json:"server" yaml:"server"`
+	Database database.Config `json:"database" yaml:"database"`
 }
 
 func Environ() *Config {
 	// TODO 可以添加一些默认设置
-	return &Config{}
+	cfg := &Config{}
+	cfg.Server.Secret = DefaultJwtSecret
+	return cfg
 }

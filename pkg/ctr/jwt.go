@@ -5,7 +5,7 @@ package ctr
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"stone/pkg/errs"
+	"luban/pkg/errs"
 )
 
 type JwtClaims struct {

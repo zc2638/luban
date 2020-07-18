@@ -5,7 +5,7 @@ package global
 
 import (
 	"github.com/jinzhu/gorm"
-	"stone/pkg/database"
+	"luban/pkg/database"
 )
 
 var config *Config

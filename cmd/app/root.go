@@ -18,9 +18,10 @@ package app
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"stone/global"
+	"luban/global"
 )
 
 var cfgFile string
@@ -31,7 +32,12 @@ func NewServerCommand() *cobra.Command {
 		Short: "Stone service",
 		Long:  `Stone service.`,
 	}
-	cmd.AddCommand(NewServerCmd(), NewMigrateCmd(), NewConfigCmd())
+	cmd.AddCommand(
+		NewServerCmd(),
+		NewMigrateCmd(),
+		NewConfigCmd(),
+		NewDocCmd(),
+	)
 	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", global.DefaultPath, "config file (default is $HOME/config.yaml)")
 	return cmd
 }
@@ -53,6 +59,8 @@ func ParseConfig() (*global.Config, error) {
 	}
 	fmt.Println("Using config file:", viper.ConfigFileUsed())
 	cfg := global.Environ()
-	err := viper.Unmarshal(cfg)
+	err := viper.Unmarshal(cfg, func(dc *mapstructure.DecoderConfig) {
+		dc.TagName = "json"
+	})
 	return cfg, err
 }

@@ -2,8 +2,8 @@ package logger
 
 import (
 	"github.com/sirupsen/logrus"
+	"luban/pkg/logger/hook"
 	"os"
-	"stone/pkg/logger/hook"
 	"time"
 )
 

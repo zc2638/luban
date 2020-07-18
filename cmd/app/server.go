@@ -17,10 +17,13 @@ package app
 
 import (
 	"fmt"
+	"github.com/go-chi/chi"
 	"github.com/spf13/cobra"
-	"stone/global"
-	"stone/handler/api"
-	"stone/pkg/serve"
+	"luban/global"
+	"luban/handler/api"
+	"luban/pkg/ctr"
+	"luban/pkg/server"
+	"net/http"
 )
 
 // serverCmd represents the server command
@@ -29,13 +32,13 @@ func NewServerCmd() *cobra.Command {
 		Use:          "server",
 		Short:        "Run server",
 		Long:         `Run server`,
-		RunE:         server,
+		RunE:         startServer,
 		SilenceUsage: true,
 	}
 	return cmd
 }
 
-func server(cmd *cobra.Command, args []string) error {
+func startServer(cmd *cobra.Command, args []string) error {
 	cfg, err := ParseConfig()
 	if err != nil {
 		return err
@@ -43,8 +46,17 @@ func server(cmd *cobra.Command, args []string) error {
 	if err := global.InitConfig(cfg); err != nil {
 		return err
 	}
-	server := serve.New(&cfg.Serve)
-	server.Handler = api.New()
-	fmt.Println("Listen on", server.Addr)
-	return server.Run()
+	s := server.New(&cfg.Server)
+	s.Handler = routes()
+	fmt.Println("Listen on", s.Addr)
+	return s.Run()
+}
+
+func routes() http.Handler {
+	mux := chi.NewMux()
+	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		ctr.Str(w, "Hello Luban!")
+	})
+	mux.Mount("/v1", api.New())
+	return mux
 }

@@ -5,7 +5,7 @@ package migration
 
 import (
 	"errors"
-	"stone/pkg/database"
+	"luban/pkg/database"
 )
 
 // check database.

@@ -1,7 +1,7 @@
 /**
  * Created by zc on 2020/6/7.
  */
-package serve
+package server
 
 import (
 	"context"
@@ -14,9 +14,11 @@ import (
 	"time"
 )
 
+const DefaultPort = 9090
+
 type Config struct {
-	Port   int    `json:"port"`
-	Secret string `json:"secret"`
+	Port   int    `json:"port" yaml:"port"`
+	Secret string `json:"secret" yaml:"secret"`
 }
 
 type Server struct {
@@ -24,7 +26,11 @@ type Server struct {
 }
 
 func New(cfg *Config) *Server {
-	addr := ":" + strconv.Itoa(cfg.Port)
+	var port = DefaultPort
+	if cfg.Port > 0 {
+		port = cfg.Port
+	}
+	addr := ":" + strconv.Itoa(port)
 	server := &http.Server{
 		Addr:           addr,
 		ReadTimeout:    20 * time.Second,

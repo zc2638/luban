@@ -4,15 +4,15 @@
 package api
 
 import (
+	"luban/global"
+	"luban/pkg/ctr"
+	"luban/pkg/errs"
 	"net/http"
-	"stone/global"
-	"stone/pkg/ctr"
-	"stone/pkg/errs"
 )
 
 func JwtAuth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		claims, err := ctr.JwtParse(r.Header.Get(global.HeaderTokenKey), global.Cfg().Serve.Secret)
+		claims, err := ctr.JwtParse(r.Header.Get(global.HeaderTokenKey), global.Cfg().Server.Secret)
 		if err != nil {
 			ctr.Unauthorized(w, errs.ErrInvalidToken.With(err))
 			return

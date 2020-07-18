@@ -6,7 +6,7 @@ package ctr
 import (
 	"encoding/json"
 	"io"
-	"stone/pkg/errs"
+	"luban/pkg/errs"
 )
 
 // JSONParseReader decode Reader to any struct

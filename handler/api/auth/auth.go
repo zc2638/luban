@@ -5,12 +5,12 @@ package auth
 
 import (
 	"context"
+	"luban/global"
+	"luban/pkg/api"
+	"luban/pkg/api/store"
+	"luban/pkg/ctr"
+	"luban/service"
 	"net/http"
-	"stone/global"
-	"stone/pkg/api"
-	"stone/pkg/api/store"
-	"stone/pkg/ctr"
-	"stone/service"
 )
 
 func Register() http.HandlerFunc {
@@ -50,7 +50,7 @@ func Login() http.HandlerFunc {
 			Username: user.Username,
 			Email:    user.Email,
 		}
-		token, err := ctr.JwtCreate(ctr.JwtClaims{User: userInfo}, global.Cfg().Serve.Secret)
+		token, err := ctr.JwtCreate(ctr.JwtClaims{User: userInfo}, global.Cfg().Server.Secret)
 		if err != nil {
 			ctr.BadRequest(w, err)
 			return

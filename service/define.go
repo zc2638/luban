@@ -5,7 +5,7 @@ package service
 
 import (
 	"context"
-	"stone/pkg/api/store"
+	"luban/pkg/api/store"
 )
 
 type Interface interface {

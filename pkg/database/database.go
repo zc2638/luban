@@ -10,11 +10,11 @@ import (
 )
 
 type Config struct {
-	Addr     string `json:"addr"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	DBName   string `json:"dbname"`
-	Debug    bool   `json:"debug"`
+	Addr     string `json:"addr" yaml:"addr"`
+	Username string `json:"username" yaml:"username"`
+	Password string `json:"password" yaml:"password"`
+	DBName   string `json:"dbname" yaml:"dbname"`
+	Debug    bool   `json:"debug" yaml:"debug"`
 }
 
 func (c *Config) Clone() *Config {

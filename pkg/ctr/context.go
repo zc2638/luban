@@ -5,10 +5,14 @@ package ctr
 
 import (
 	"context"
-	"stone/pkg/errs"
+	"luban/pkg/errs"
 )
 
-const ContextUserKey = "user"
+type key int
+
+const (
+	ContextUserKey key = iota
+)
 
 // ContextWithUser returns a copy of parent in which the user value is set
 func ContextWithUser(parent context.Context, user *JwtUserInfo) context.Context {

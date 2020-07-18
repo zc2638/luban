@@ -7,30 +7,22 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"luban/handler/api/auth"
+	"luban/handler/api/space"
 	"net/http"
-	"stone/handler/api/auth"
-	"stone/handler/api/space"
-	"stone/pkg/ctr"
 )
 
+// New handle v1 version routing
 func New() http.Handler {
 	mux := chi.NewMux()
 	mux.Use(middleware.Recoverer, middleware.Logger, cors.AllowAll().Handler)
-	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		ctr.Str(w, "Hello Stone!")
-	})
-	mux.Route("/v1", v1)
-	return mux
-}
-
-// v1 handle v1 version routing
-func v1(r chi.Router) {
-	r.Route("/auth", authRoute)
-	r.Group(func(r chi.Router) {
+	mux.Route("/auth", authRoute)
+	mux.Group(func(r chi.Router) {
 		r.Use(JwtAuth)
 		r.Route("/user", userRoute)
 		r.Route("/space", spaceRoute)
 	})
+	return mux
 }
 
 // authRoute handle auth routing related

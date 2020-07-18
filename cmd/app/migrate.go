@@ -18,7 +18,7 @@ package app
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"stone/pkg/database/migration"
+	"luban/pkg/database/migration"
 )
 
 // migrateCmd represents the migrate command
