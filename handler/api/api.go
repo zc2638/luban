@@ -40,7 +40,8 @@ func userRoute(r chi.Router) {
 func spaceRoute(r chi.Router) {
 	r.Get("/", space.List())
 	r.Post("/", space.Create())
-	r.Get("/{id}", space.Find())
-	r.Put("/{id}", space.Update())
-	r.Delete("/{id}", space.Delete())
+	r.Route("/{name}", func(cr chi.Router) {
+		cr.Put("/", space.Update())
+		cr.Delete("/", space.Delete())
+	})
 }

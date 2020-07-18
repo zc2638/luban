@@ -5,7 +5,6 @@ package api
 
 type RegisterParams struct {
 	Username string `json:"username"`
-	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -16,11 +15,9 @@ type LoginParams struct {
 
 type LoginResult struct {
 	Username string `json:"username"`
-	Email    string `json:"email"`
 	Token    string `json:"token"`
 }
 
 type SpaceParams struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Name string `json:"name"`
 }

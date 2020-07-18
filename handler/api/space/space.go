@@ -6,7 +6,6 @@ package space
 import (
 	"github.com/go-chi/chi"
 	"luban/pkg/api"
-	"luban/pkg/api/store"
 	"luban/pkg/ctr"
 	"luban/service"
 	"net/http"
@@ -23,18 +22,6 @@ func List() http.HandlerFunc {
 	}
 }
 
-func Find() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		id := chi.URLParam(r, "id")
-		space, err := service.New().Space().Find(r.Context(), id)
-		if err != nil {
-			ctr.BadRequest(w, err)
-			return
-		}
-		ctr.OK(w, space)
-	}
-}
-
 func Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params api.SpaceParams
@@ -42,11 +29,7 @@ func Create() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
-		space := store.Space{
-			Title:       params.Title,
-			Description: params.Description,
-		}
-		if err := service.New().Space().Create(r.Context(), &space); err != nil {
+		if err := service.New().Space().Create(r.Context(), params.Name); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -61,13 +44,8 @@ func Update() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
-		id := chi.URLParam(r, "id")
-		space := store.Space{
-			SID:         id,
-			Title:       params.Title,
-			Description: params.Description,
-		}
-		if err := service.New().Space().Update(r.Context(), &space); err != nil {
+		target := chi.URLParam(r, "name")
+		if err := service.New().Space().Update(r.Context(), target, params.Name); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -77,8 +55,8 @@ func Update() http.HandlerFunc {
 
 func Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		id := chi.URLParam(r, "id")
-		if err := service.New().Space().Delete(r.Context(), id); err != nil {
+		name := chi.URLParam(r, "name")
+		if err := service.New().Space().Delete(r.Context(), name); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}

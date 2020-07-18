@@ -22,7 +22,6 @@ func Register() http.HandlerFunc {
 		}
 		user := &store.User{
 			Username: params.Username,
-			Email:    params.Email,
 			Pwd:      params.Password,
 		}
 		if err := service.New().User().Create(context.Background(), user); err != nil {
@@ -46,9 +45,8 @@ func Login() http.HandlerFunc {
 			return
 		}
 		userInfo := ctr.JwtUserInfo{
-			UID:      user.UID,
 			Username: user.Username,
-			Email:    user.Email,
+			Code:     user.Code,
 		}
 		token, err := ctr.JwtCreate(ctr.JwtClaims{User: userInfo}, global.Cfg().Server.Secret)
 		if err != nil {
@@ -57,7 +55,6 @@ func Login() http.HandlerFunc {
 		}
 		ctr.OK(w, api.LoginResult{
 			Username: user.Username,
-			Email:    user.Email,
 			Token:    token,
 		})
 	}

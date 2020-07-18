@@ -5,59 +5,46 @@ package service
 
 import (
 	"context"
-	"github.com/google/uuid"
-	"luban/global"
-	"luban/pkg/api/store"
 	"luban/pkg/ctr"
+	"luban/pkg/fs"
+	"path/filepath"
 )
 
 type spaceService struct{}
 
-func (s *spaceService) List(ctx context.Context) ([]*store.Space, error) {
+func (s *spaceService) List(ctx context.Context) ([]string, error) {
 	user, err := ctr.ContextUserFrom(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var list []*store.Space
-	db := global.DB().Where(&store.Space{Owner: user.UID}).Find(&list)
-	return list, db.Error
+	return fs.New().Dir().List(user.UserPath())
 }
 
-func (s *spaceService) Find(ctx context.Context, id string) (*store.Space, error) {
-	user, err := ctr.ContextUserFrom(ctx)
-	if err != nil {
-		return nil, err
-	}
-	var space store.Space
-	db := global.DB().Where(&store.Space{Owner: user.UID, SID: id}).First(&space)
-	if db.Error != nil {
-		return nil, db.Error
-	}
-	return &space, nil
-}
-
-func (s *spaceService) Create(ctx context.Context, space *store.Space) error {
+func (s *spaceService) Create(ctx context.Context, name string) error {
 	user, err := ctr.ContextUserFrom(ctx)
 	if err != nil {
 		return err
 	}
-	space.SID = uuid.New().String()
-	space.Owner = user.UID
-	return global.DB().Create(space).Error
+	path := filepath.Join(user.UserPath(), name)
+	return fs.New().Dir().Create(path)
 }
 
-func (s *spaceService) Update(ctx context.Context, space *store.Space) error {
-	info, err := s.Find(ctx, space.SID)
+func (s *spaceService) Update(ctx context.Context, target, name string) error {
+	user, err := ctr.ContextUserFrom(ctx)
 	if err != nil {
 		return err
 	}
-	return global.DB().Model(info).Updates(space).Error
+	userPath := user.UserPath()
+	targetPath := filepath.Join(userPath, target)
+	path := filepath.Join(userPath, name)
+	return fs.New().Dir().Update(targetPath, path)
 }
 
-func (s *spaceService) Delete(ctx context.Context, id string) error {
-	info, err := s.Find(ctx, id)
+func (s *spaceService) Delete(ctx context.Context, name string) error {
+	user, err := ctr.ContextUserFrom(ctx)
 	if err != nil {
 		return err
 	}
-	return global.DB().Delete(info).Error
+	path := filepath.Join(user.UserPath(), name)
+	return fs.New().Dir().Delete(path)
 }

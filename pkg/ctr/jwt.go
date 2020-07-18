@@ -5,7 +5,9 @@ package ctr
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"luban/global"
 	"luban/pkg/errs"
+	"path/filepath"
 )
 
 type JwtClaims struct {
@@ -14,20 +16,26 @@ type JwtClaims struct {
 }
 
 type JwtUserInfo struct {
-	UID      string `json:"uid"`
+	Code     string `json:"code"`
 	Username string `json:"username"`
-	Email    string `json:"email"`
+}
+
+func (u *JwtUserInfo) UserPath() string {
+	if u.Code == "" {
+		return ""
+	}
+	return filepath.Join(global.PathData, u.Code)
 }
 
 // JwtCreate returns the JWT token by claims and secret
-func JwtCreate(claims JwtClaims, secret string) (string, error) {
+func JwtCreate(claims jwt.Claims, secret string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(secret))
 }
 
 // JwtParse returns the claims by JWT token and secret
-func JwtParse(tokenStr string, secret string) (*JwtClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenStr, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
+func JwtParse(claims jwt.Claims, tokenStr string, secret string) error {
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		// validate the signing method
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errs.New("Token: invalid signature")
@@ -35,11 +43,10 @@ func JwtParse(tokenStr string, secret string) (*JwtClaims, error) {
 		return []byte(secret), nil
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	claims, ok := token.Claims.(*JwtClaims)
-	if !ok || !token.Valid {
-		return nil, errs.New("Invalid Token")
+	if !token.Valid {
+		return errs.New("Invalid Token")
 	}
-	return claims, nil
+	return nil
 }
