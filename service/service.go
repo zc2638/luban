@@ -6,24 +6,79 @@ package service
 import (
 	"context"
 	"luban/pkg/api/store"
+	"luban/pkg/errs"
 )
 
 type Interface interface {
+	// User returns the UserService interface definition
 	User() UserService
+
+	// Space returns the SpaceService interface definition
 	Space() SpaceService
+
+	// Config returns the ConfigService interface definition
+	Config() ConfigService
 }
 
-type UserService interface {
-	FindByNameAndPwd(ctx context.Context, username, password string) (*store.User, error)
-	Create(ctx context.Context, user *store.User) error
-}
+type (
+	UserService interface {
+		// All returns the all users list
+		All(ctx context.Context) ([]store.User, error)
 
-type SpaceService interface {
-	List(ctx context.Context) ([]string, error)
-	Create(ctx context.Context, name string) error
-	Update(ctx context.Context, target string, name string) error
-	Delete(ctx context.Context, name string) error
-}
+		// FindByNameAndPwd returns the current user by username and password
+		FindByNameAndPwd(ctx context.Context, username, password string) (*store.User, error)
+
+		// Create creates a user
+		Create(ctx context.Context, user *store.User) error
+	}
+	SpaceService interface {
+		// List returns the space list
+		List(ctx context.Context) ([]store.Space, error)
+
+		// Create creates a space
+		Create(ctx context.Context, name string) error
+
+		// Update updates the space info
+		Update(ctx context.Context, name string) error
+
+		// Delete deletes a space
+		Delete(ctx context.Context) error
+	}
+	ConfigService interface {
+		// List returns the config list
+		List(ctx context.Context) ([]store.Config, error)
+
+		// Find returns the current config
+		Find(ctx context.Context) (*store.Config, error)
+
+		// Create creates a config in space
+		Create(ctx context.Context, config *store.Config) error
+
+		// Update updates the config info
+		Update(ctx context.Context, config *store.Config) error
+
+		// Delete deletes a config
+		Delete(ctx context.Context) error
+
+		// Raw returns the current config content
+		Raw(ctx context.Context, username, space, config string) ([]byte, error)
+
+		// VersionList returns the version config list
+		VersionList(ctx context.Context) ([]store.ConfigVersion, error)
+
+		// VersionFind returns the current version config
+		VersionFind(ctx context.Context, name string) ([]byte, error)
+
+		// VersionCreate creates a version config
+		VersionCreate(ctx context.Context, version string) error
+
+		// VersionDelete deletes a version config
+		VersionDelete(ctx context.Context, name string) error
+
+		// VersionRaw returns the current version config content
+		VersionRaw(ctx context.Context, username, space, config, version string) ([]byte, error)
+	}
+)
 
 type Service struct{}
 
@@ -38,3 +93,12 @@ func (s *Service) User() UserService {
 func (s *Service) Space() SpaceService {
 	return &spaceService{}
 }
+
+func (s *Service) Config() ConfigService {
+	return &configService{}
+}
+
+const (
+	ErrNotExist = errs.Error("not exist")
+	ErrExist    = errs.Error("already exist")
+)

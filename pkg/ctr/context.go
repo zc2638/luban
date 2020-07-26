@@ -12,6 +12,8 @@ type key int
 
 const (
 	ContextUserKey key = iota
+	ContextSpaceKey
+	ContextConfigKey
 )
 
 // ContextWithUser returns a copy of parent in which the user value is set
@@ -26,4 +28,24 @@ func ContextUserFrom(ctx context.Context) (*JwtUserInfo, error) {
 		return nil, errs.ErrUnauthorized
 	}
 	return user, nil
+}
+
+// ContextWithSpace returns a copy of parent in which the space value is set
+func ContextWithSpace(parent context.Context, space string) context.Context {
+	return context.WithValue(parent, ContextSpaceKey, space)
+}
+
+// ContextSpaceValue returns the value of the space key on the ctx
+func ContextSpaceValue(ctx context.Context) string {
+	return ctx.Value(ContextSpaceKey).(string)
+}
+
+// ContextWithConfig returns a copy of parent in which the config value is set
+func ContextWithConfig(parent context.Context, config string) context.Context {
+	return context.WithValue(parent, ContextConfigKey, config)
+}
+
+// ContextConfigValue returns the value of the config key on the ctx
+func ContextConfigValue(ctx context.Context) string {
+	return ctx.Value(ContextConfigKey).(string)
 }

@@ -21,3 +21,15 @@ type LoginResult struct {
 type SpaceParams struct {
 	Name string `json:"name"`
 }
+
+type ConfigParams struct {
+	Name    string `json:"name"`    // 名称
+	Desc    string `json:"desc"`    // 描述
+	Format  string `json:"format"`  // 格式
+	Content string `json:"content"` // 内容
+	Version string `json:"version"` // 版本
+}
+
+type ConfigVersionParams struct {
+	Version string `json:"version"` // 版本号
+}

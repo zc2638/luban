@@ -22,6 +22,7 @@ func (e Error) With(err error) error {
 const (
 	// ErrBodyParse is returned when body parse error
 	ErrBodyParse = Error("Body parameter format error")
+
 	// ErrInvalidToken is returned when the api request token is invalid.
 	ErrInvalidToken = Error("Invalid or missing token")
 
@@ -36,4 +37,10 @@ const (
 
 	// ErrNotImplemented is returned when an endpoint is not implemented.
 	ErrNotImplemented = Error("Not Implemented")
+
+	// ErrInvalidSpace is returned when the api request space is invalid.
+	ErrInvalidSpace = Error("Invalid or missing space")
+
+	// ErrInvalidConfig is returned when the api request config is invalid.
+	ErrInvalidConfig = Error("Invalid or missing config")
 )

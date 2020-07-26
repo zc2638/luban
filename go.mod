@@ -14,6 +14,7 @@ require (
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/pkg/errors v0.8.0
 	github.com/sirupsen/logrus v1.6.0
+	github.com/spf13/afero v1.1.2
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
 	github.com/zc2638/gotool v0.0.0-20200528080342-200e82def869

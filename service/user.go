@@ -4,62 +4,38 @@
 package service
 
 import (
-	"bytes"
 	"context"
+	"gopkg.in/yaml.v2"
 	"luban/global"
 	"luban/pkg/api/store"
 	"luban/pkg/errs"
-	"luban/pkg/fs"
+	"luban/pkg/storage"
 	"luban/pkg/uuid"
-	"strings"
 )
 
 type userService struct{}
 
-func (s *userService) all() ([]store.User, error) {
-	ub, err := fs.New().File().Find(global.FilePathUser)
+func (s *userService) All(ctx context.Context) ([]store.User, error) {
+	ub, err := storage.New().Find(global.PathRoot, global.KeyUserFile)
 	if err != nil {
 		return nil, err
 	}
-	us := string(ub)
-	arr := strings.Split(us, "\n")
-	users := make([]store.User, 0, len(arr))
-	for _, v := range arr {
-		infos := strings.Split(v, ",")
-		if len(infos) != 3 {
-			continue
-		}
-		users = append(users, store.User{
-			Code:     infos[0],
-			Username: infos[1],
-			Pwd:      infos[2],
-		})
-	}
-	return users, nil
-}
-
-func (s *userService) FindStatus(ctx context.Context, name string) (user *store.User, exist bool, err error) {
-	users, err := s.all()
-	if err != nil {
-		return nil, false, err
-	}
-	for _, u := range users {
-		if u.Username == name {
-			return &u, true, nil
-		}
-	}
-	return &store.User{}, false, nil
+	var users []store.User
+	err = yaml.Unmarshal(ub, &users)
+	return users, err
 }
 
 func (s *userService) Find(ctx context.Context, name string) (*store.User, error) {
-	user, exist, err := s.FindStatus(ctx, name)
+	users, err := s.All(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if !exist {
-		return nil, errs.Error("user not found")
+	for _, u := range users {
+		if u.Username == name {
+			return &u, nil
+		}
 	}
-	return user, nil
+	return nil, ErrNotExist
 }
 
 func (s *userService) FindByNameAndPwd(ctx context.Context, username, password string) (*store.User, error) {
@@ -74,28 +50,21 @@ func (s *userService) FindByNameAndPwd(ctx context.Context, username, password s
 }
 
 func (s *userService) Create(ctx context.Context, user *store.User) error {
-	users, err := s.all()
+	users, err := s.All(ctx)
 	if err != nil {
 		return err
 	}
 	// check if the user name is duplicate
-	_, exist, err := s.FindStatus(ctx, user.Username)
-	if err != nil {
-		return err
-	}
-	if exist {
-		return errs.New("Duplicate username")
+	for _, u := range users {
+		if u.Username == user.Username {
+			return errs.New("Duplicate username")
+		}
 	}
 	user.Code = uuid.New()
 	users = append(users, *user)
-	var buf bytes.Buffer
-	for _, u := range users {
-		buf.WriteString(u.Code)
-		buf.WriteString(",")
-		buf.WriteString(u.Username)
-		buf.WriteString(",")
-		buf.WriteString(u.Pwd)
-		buf.WriteString("\n")
+	b, err := yaml.Marshal(&users)
+	if err != nil {
+		return err
 	}
-	return fs.New().File().Update(global.FilePathUser, buf.Bytes())
+	return storage.New().Update(global.PathRoot, global.KeyUserFile, b)
 }

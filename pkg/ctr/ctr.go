@@ -13,10 +13,15 @@ func Success(w http.ResponseWriter) {
 	Str(w, "ok")
 }
 
+// Bytes writes the Bytes message to the response.
+func Bytes(w http.ResponseWriter, bytes []byte) {
+	w.WriteHeader(http.StatusOK)
+	w.Write(bytes)
+}
+
 // Str writes the string message to the response.
 func Str(w http.ResponseWriter, str string) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(str))
+	Bytes(w, []byte(str))
 }
 
 // OK writes the json-encoded data to the response.

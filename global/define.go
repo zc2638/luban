@@ -10,14 +10,12 @@ const HeaderTokenKey = "Stone-Token"
 const DefaultJwtSecret = "Stone"
 
 const (
-	PathRoot = "luban"
-	PathData = PathRoot + "/data"
+	PathRoot     = "luban"
+	PathData     = PathRoot + "/data"
+	PathUserFile = PathRoot + "/" + KeyUserFile
 )
 
 const (
-	FilePathUser = PathRoot + "/user.conf"
-)
-
-const (
-	KeySpace = "space"
+	KeyUserFile = "manifest.user"
+	KeyManifest = "manifest"
 )
