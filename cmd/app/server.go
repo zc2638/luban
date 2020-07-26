@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 	"luban/global"
 	"luban/handler/api"
+	"luban/handler/web"
 	"luban/pkg/ctr"
 	"luban/pkg/server"
 	"net/http"
@@ -58,5 +59,7 @@ func routes() http.Handler {
 		ctr.Str(w, "Hello Luban!")
 	})
 	mux.Mount("/v1", api.New())
+	mux.Mount("/web", web.New())
+	mux.Handle("/favicon.png", web.FaviconImage())
 	return mux
 }

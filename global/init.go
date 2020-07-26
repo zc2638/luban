@@ -17,9 +17,9 @@ var config *Config
 // InitConfig Initialize all used configurations
 func InitConfig(cfg *Config) error {
 	config = cfg
-	if err := initDatabase(&cfg.Database); err != nil {
-		return err
-	}
+	//if err := initDatabase(&cfg.Database); err != nil {
+	//	return err
+	//}
 	return initUser()
 }
 

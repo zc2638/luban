@@ -11,6 +11,7 @@ import (
 	"luban/pkg/ctr"
 	"luban/pkg/errs"
 	"luban/pkg/storage"
+	"luban/pkg/utils"
 	"path/filepath"
 	"strings"
 )
@@ -76,7 +77,7 @@ func (s *configService) Create(ctx context.Context, config *store.Config) error 
 	}
 	// 创建配置文件
 	fp := filepath.Join(path, config.Name)
-	return storage.New().Update(fp, config.Name, []byte(config.Content))
+	return storage.New().Update(fp, global.KeyConfigDefault, []byte(config.Content))
 }
 
 func (s *configService) Update(ctx context.Context, config *store.Config) error {
@@ -106,9 +107,19 @@ func (s *configService) Update(ctx context.Context, config *store.Config) error 
 	if err := storage.New().Update(path, global.KeyManifest, manifest); err != nil {
 		return err
 	}
-	// 创建配置文件
+	keys, err := storage.New().PathKeys(path)
+	if err != nil {
+		return err
+	}
 	fp := filepath.Join(path, config.Name)
-	return storage.New().Update(fp, config.Name, []byte(config.Content))
+	if _, exist := utils.InStringSlice(keys, target); exist {
+		targetPath := filepath.Join(path, target)
+		if err := storage.New().PathUpdate(targetPath, fp); err != nil {
+			return err
+		}
+	}
+	// 创建/更新配置文件
+	return storage.New().Update(fp, global.KeyConfigDefault, []byte(config.Content))
 }
 
 func (s *configService) Delete(ctx context.Context) error {
@@ -149,7 +160,7 @@ func (s *configService) Raw(ctx context.Context, username, space, config string)
 		return nil, err
 	}
 	path := filepath.Join(global.PathData, user.Code, space, config)
-	return storage.New().Find(path, config)
+	return storage.New().Find(path, global.KeyConfigDefault)
 }
 
 func (s *configService) getConfigPath(ctx context.Context) (string, error) {

@@ -22,6 +22,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"luban/global"
+	"os"
+	"strings"
 )
 
 var cfgFile string
@@ -38,11 +40,19 @@ func NewServerCommand() *cobra.Command {
 		NewConfigCmd(),
 		NewDocCmd(),
 	)
-	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", global.DefaultPath, "config file (default is $HOME/config.yaml)")
+	cfgFileENV := os.Getenv("LUBAN_CONFIG")
+	var cfgFilePath string
+	if cfgFileENV != "" {
+		cfgFilePath = cfgFileENV
+	} else {
+		cfgFilePath = global.DefaultPath
+	}
+	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", cfgFilePath, "config file (default is $HOME/config.yaml)")
 	return cmd
 }
 
 func ParseConfig() (*global.Config, error) {
+	fmt.Println(cfgFile)
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
@@ -53,6 +63,8 @@ func ParseConfig() (*global.Config, error) {
 		viper.AddConfigPath(home)
 		viper.SetConfigName("config.yaml")
 	}
+	viper.SetEnvPrefix("LUBAN")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
