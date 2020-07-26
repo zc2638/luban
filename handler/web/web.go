@@ -4,7 +4,6 @@
 package web
 
 import (
-	"fmt"
 	"github.com/go-chi/chi"
 	"net/http"
 	"path/filepath"
@@ -19,7 +18,6 @@ func New() http.Handler {
 
 func fileSystem() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(r.URL.Path)
 		url := strings.Trim(r.URL.Path, "/web")
 		list := strings.Split(url, "/")
 		current := make([]string, 0, len(list))

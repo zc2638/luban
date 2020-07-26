@@ -56,6 +56,7 @@ func Login() http.HandlerFunc {
 		ctr.OK(w, api.LoginResult{
 			Username: user.Username,
 			Token:    token,
+			Host:     global.Cfg().Server.Host,
 		})
 	}
 }

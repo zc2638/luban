@@ -16,6 +16,7 @@ type LoginParams struct {
 type LoginResult struct {
 	Username string `json:"username"`
 	Token    string `json:"token"`
+	Host     string `json:"host"`
 }
 
 type SpaceParams struct {

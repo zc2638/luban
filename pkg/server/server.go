@@ -17,6 +17,7 @@ import (
 const DefaultPort = 9090
 
 type Config struct {
+	Host   string `json:"host" yaml:"host"`
 	Port   int    `json:"port" yaml:"port"`
 	Secret string `json:"secret" yaml:"secret"`
 }
