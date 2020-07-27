@@ -5,7 +5,9 @@ package space
 
 import (
 	"luban/pkg/api"
+	"luban/pkg/compile"
 	"luban/pkg/ctr"
+	"luban/pkg/errs"
 	"luban/service"
 	"net/http"
 )
@@ -28,6 +30,10 @@ func Create() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
+		if !compile.Name().MatchString(params.Name) {
+			ctr.BadRequest(w, errs.ErrInvalidSpace)
+			return
+		}
 		if err := service.New().Space().Create(r.Context(), params.Name); err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -41,6 +47,10 @@ func Update() http.HandlerFunc {
 		var params api.SpaceParams
 		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
+			return
+		}
+		if !compile.Name().MatchString(params.Name) {
+			ctr.BadRequest(w, errs.ErrInvalidSpace)
 			return
 		}
 		if err := service.New().Space().Update(r.Context(), params.Name); err != nil {

@@ -257,3 +257,8 @@ func (s *configService) VersionRaw(ctx context.Context, username, space, config,
 	}
 	return nil, nil
 }
+
+func (s *configService) VersionDefaultSetting(ctx context.Context, version string) error {
+	// TODO 直接创建一个latest config 文件
+	return nil
+}

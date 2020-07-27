@@ -6,7 +6,9 @@ package config
 import (
 	"github.com/go-chi/chi"
 	"luban/pkg/api"
+	"luban/pkg/compile"
 	"luban/pkg/ctr"
+	"luban/pkg/errs"
 	"luban/service"
 	"net/http"
 )
@@ -39,6 +41,10 @@ func VersionCreate() http.HandlerFunc {
 		var params api.ConfigVersionParams
 		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
+			return
+		}
+		if !compile.Name().MatchString(params.Version) {
+			ctr.BadRequest(w, errs.ErrInvalidConfigVersion)
 			return
 		}
 		if err := service.New().Config().VersionCreate(r.Context(), params.Version); err != nil {

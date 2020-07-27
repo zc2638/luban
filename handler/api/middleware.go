@@ -6,6 +6,7 @@ package api
 import (
 	"github.com/go-chi/chi"
 	"luban/global"
+	"luban/pkg/compile"
 	"luban/pkg/ctr"
 	"luban/pkg/errs"
 	"luban/service"
@@ -51,7 +52,7 @@ func JwtAuth(next http.Handler) http.Handler {
 func SpaceAuth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		space := chi.URLParam(r, "space")
-		if space == "" {
+		if space == "" || !compile.Name().MatchString(space) {
 			ctr.BadRequest(w, errs.ErrInvalidSpace)
 			return
 		}
@@ -65,7 +66,7 @@ func SpaceAuth(next http.Handler) http.Handler {
 func ConfigAuth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		config := chi.URLParam(r, "config")
-		if config == "" {
+		if config == "" || !compile.Name().MatchString(config) {
 			ctr.BadRequest(w, errs.ErrInvalidConfig)
 			return
 		}

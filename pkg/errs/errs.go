@@ -43,4 +43,7 @@ const (
 
 	// ErrInvalidConfig is returned when the api request config is invalid.
 	ErrInvalidConfig = Error("Invalid or missing config")
+
+	// ErrInvalidConfigVersion is returned when the api request config version is invalid.
+	ErrInvalidConfigVersion = Error("Invalid or missing config version")
 )

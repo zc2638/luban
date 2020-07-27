@@ -6,7 +6,9 @@ package config
 import (
 	"luban/pkg/api"
 	"luban/pkg/api/store"
+	"luban/pkg/compile"
 	"luban/pkg/ctr"
+	"luban/pkg/errs"
 	"luban/service"
 	"net/http"
 )
@@ -40,6 +42,10 @@ func Create() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
+		if !compile.Name().MatchString(params.Name) {
+			ctr.BadRequest(w, errs.ErrInvalidConfig)
+			return
+		}
 		config := store.Config{
 			Name:    params.Name,
 			Desc:    params.Desc,
@@ -59,6 +65,10 @@ func Update() http.HandlerFunc {
 		var params api.ConfigParams
 		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
+			return
+		}
+		if !compile.Name().MatchString(params.Name) {
+			ctr.BadRequest(w, errs.ErrInvalidConfig)
 			return
 		}
 		config := store.Config{
