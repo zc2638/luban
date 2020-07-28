@@ -13,7 +13,7 @@ import (
 	"luban/pkg/storage"
 	"luban/pkg/utils"
 	"path/filepath"
-	"strings"
+	"time"
 )
 
 type configService struct{}
@@ -103,23 +103,25 @@ func (s *configService) Update(ctx context.Context, config *store.Config) error 
 	}
 	space := ctr.ContextSpaceValue(ctx)
 	path := filepath.Join(user.UserPath(), space)
-	// 更新清单
-	if err := storage.New().Update(path, global.KeyManifest, manifest); err != nil {
-		return err
-	}
-	keys, err := storage.New().PathKeys(path)
-	if err != nil {
-		return err
-	}
 	fp := filepath.Join(path, config.Name)
-	if _, exist := utils.InStringSlice(keys, target); exist {
-		targetPath := filepath.Join(path, target)
-		if err := storage.New().PathUpdate(targetPath, fp); err != nil {
+	// 创建/更新配置文件
+	if err := storage.New().Update(fp, global.KeyConfigDefault, []byte(config.Content)); err != nil {
+		return err
+	}
+	if target != config.Name {
+		keys, err := storage.New().PathKeys(path)
+		if err != nil {
 			return err
 		}
+		if _, exist := utils.InStringSlice(keys, target); exist {
+			targetPath := filepath.Join(path, target)
+			if err := storage.New().PathUpdate(targetPath, fp); err != nil {
+				return err
+			}
+		}
 	}
-	// 创建/更新配置文件
-	return storage.New().Update(fp, global.KeyConfigDefault, []byte(config.Content))
+	// 更新清单
+	return storage.New().Update(path, global.KeyManifest, manifest)
 }
 
 func (s *configService) Delete(ctx context.Context) error {
@@ -179,22 +181,17 @@ func (s *configService) VersionList(ctx context.Context) ([]store.ConfigVersion,
 	if err != nil {
 		return nil, err
 	}
-	keys, err := storage.New().Keys(path)
+	manifest, err := storage.New().Find(path, global.KeyManifest)
 	if err != nil {
 		return nil, err
 	}
-	list := make([]store.ConfigVersion, 0, len(keys))
-	for _, key := range keys {
-		ext := filepath.Ext(key)
-		if ext == "" {
-			continue
+	var verGroup []store.ConfigVersion
+	if len(manifest) > 0 {
+		if err := yaml.Unmarshal(manifest, &verGroup); err != nil {
+			return nil, err
 		}
-		list = append(list, store.ConfigVersion{
-			Version: strings.Trim(key, ext),
-			Format:  strings.Trim(ext, "."),
-		})
 	}
-	return list, nil
+	return verGroup, nil
 }
 
 func (s *configService) VersionFind(ctx context.Context, name string) ([]byte, error) {
@@ -202,10 +199,10 @@ func (s *configService) VersionFind(ctx context.Context, name string) ([]byte, e
 	if err != nil {
 		return nil, err
 	}
-	return storage.New().Find(path, name)
+	return storage.New().Find(path, name+global.KeyConfigVersionExt)
 }
 
-func (s *configService) VersionCreate(ctx context.Context, version string) error {
+func (s *configService) VersionCreate(ctx context.Context, version, desc string) error {
 	info, err := s.Find(ctx)
 	if err != nil {
 		return err
@@ -214,27 +211,57 @@ func (s *configService) VersionCreate(ctx context.Context, version string) error
 	if err != nil {
 		return err
 	}
-	keys, err := storage.New().Keys(path)
+	vs, err := s.VersionList(ctx)
 	if err != nil {
 		return err
 	}
-	for _, key := range keys {
-		ext := filepath.Ext(key)
-		keyVersion := strings.Trim(key, ext)
-		if keyVersion == version {
+	list := make([]store.ConfigVersion, 0, len(vs)+1)
+	list = append(list, store.ConfigVersion{
+		Version:   version,
+		Format:    info.Format,
+		Desc:      desc,
+		CreatedAt: time.Now().Unix(),
+	})
+	for _, v := range vs {
+		if v.Version == version {
 			return ErrExist
 		}
+		list = append(list, v)
 	}
-	name := version + "." + info.Format
-	return storage.New().Create(path, name, []byte(info.Content))
+	if err := storage.New().Create(path, version+global.KeyConfigVersionExt, []byte(info.Content)); err != nil {
+		return err
+	}
+	manifest, err := yaml.Marshal(&list)
+	if err != nil {
+		return err
+	}
+	return storage.New().Update(path, global.KeyManifest, manifest)
 }
 
-func (s *configService) VersionDelete(ctx context.Context, name string) error {
+func (s *configService) VersionDelete(ctx context.Context, version string) error {
 	path, err := s.getConfigPath(ctx)
 	if err != nil {
 		return err
 	}
-	return storage.New().Delete(path, name)
+	vs, err := s.VersionList(ctx)
+	if err != nil {
+		return err
+	}
+	list := make([]store.ConfigVersion, 0, len(vs))
+	for _, v := range vs {
+		if v.Version == version {
+			continue
+		}
+		list = append(list, v)
+	}
+	manifest, err := yaml.Marshal(&list)
+	if err != nil {
+		return err
+	}
+	if err := storage.New().Update(path, global.KeyManifest, manifest); err != nil {
+		return err
+	}
+	return storage.New().Delete(path, version+global.KeyConfigVersionExt)
 }
 
 func (s *configService) VersionRaw(ctx context.Context, username, space, config, version string) ([]byte, error) {
@@ -244,18 +271,7 @@ func (s *configService) VersionRaw(ctx context.Context, username, space, config,
 		return nil, err
 	}
 	path := filepath.Join(global.PathData, user.Code, space, config)
-	keys, err := storage.New().Keys(path)
-	if err != nil {
-		return nil, err
-	}
-	for _, key := range keys {
-		ext := filepath.Ext(key)
-		keyVersion := strings.Trim(key, ext)
-		if keyVersion == version {
-			return storage.New().Find(path, key)
-		}
-	}
-	return nil, nil
+	return storage.New().Find(path, version+global.KeyConfigVersionExt)
 }
 
 func (s *configService) VersionDefaultSetting(ctx context.Context, version string) error {

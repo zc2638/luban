@@ -29,8 +29,10 @@ type ConfigParams struct {
 	Format  string `json:"format"`  // 格式
 	Content string `json:"content"` // 内容
 	Version string `json:"version"` // 版本
+	Label   string `json:"label"`   // 标签
 }
 
 type ConfigVersionParams struct {
 	Version string `json:"version"` // 版本号
+	Desc    string `json:"desc"`    // 描述
 }

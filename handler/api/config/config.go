@@ -43,7 +43,7 @@ func Create() http.HandlerFunc {
 			return
 		}
 		if !compile.Name().MatchString(params.Name) {
-			ctr.BadRequest(w, errs.ErrInvalidConfig)
+			ctr.BadRequest(w, errs.ErrInvalidConfig.With(compile.NameError))
 			return
 		}
 		config := store.Config{
@@ -51,6 +51,7 @@ func Create() http.HandlerFunc {
 			Desc:    params.Desc,
 			Format:  params.Format,
 			Content: params.Content,
+			Label:   params.Label,
 		}
 		if err := service.New().Config().Create(r.Context(), &config); err != nil {
 			ctr.BadRequest(w, err)
@@ -68,7 +69,7 @@ func Update() http.HandlerFunc {
 			return
 		}
 		if !compile.Name().MatchString(params.Name) {
-			ctr.BadRequest(w, errs.ErrInvalidConfig)
+			ctr.BadRequest(w, errs.ErrInvalidConfig.With(compile.NameError))
 			return
 		}
 		config := store.Config{
@@ -76,6 +77,7 @@ func Update() http.HandlerFunc {
 			Desc:    params.Desc,
 			Format:  params.Format,
 			Content: params.Content,
+			Label:   params.Label,
 		}
 		if err := service.New().Config().Update(r.Context(), &config); err != nil {
 			ctr.BadRequest(w, err)

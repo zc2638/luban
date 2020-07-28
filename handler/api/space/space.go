@@ -31,7 +31,7 @@ func Create() http.HandlerFunc {
 			return
 		}
 		if !compile.Name().MatchString(params.Name) {
-			ctr.BadRequest(w, errs.ErrInvalidSpace)
+			ctr.BadRequest(w, errs.ErrInvalidSpace.With(compile.NameError))
 			return
 		}
 		if err := service.New().Space().Create(r.Context(), params.Name); err != nil {
@@ -50,7 +50,7 @@ func Update() http.HandlerFunc {
 			return
 		}
 		if !compile.Name().MatchString(params.Name) {
-			ctr.BadRequest(w, errs.ErrInvalidSpace)
+			ctr.BadRequest(w, errs.ErrInvalidSpace.With(compile.NameError))
 			return
 		}
 		if err := service.New().Space().Update(r.Context(), params.Name); err != nil {

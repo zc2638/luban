@@ -44,10 +44,10 @@ func VersionCreate() http.HandlerFunc {
 			return
 		}
 		if !compile.Name().MatchString(params.Version) {
-			ctr.BadRequest(w, errs.ErrInvalidConfigVersion)
+			ctr.BadRequest(w, errs.ErrInvalidConfigVersion.With(compile.NameError))
 			return
 		}
-		if err := service.New().Config().VersionCreate(r.Context(), params.Version); err != nil {
+		if err := service.New().Config().VersionCreate(r.Context(), params.Version, params.Desc); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}

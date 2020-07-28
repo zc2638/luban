@@ -67,13 +67,13 @@ type (
 		VersionList(ctx context.Context) ([]store.ConfigVersion, error)
 
 		// VersionFind returns the current version config
-		VersionFind(ctx context.Context, name string) ([]byte, error)
+		VersionFind(ctx context.Context, version string) ([]byte, error)
 
 		// VersionCreate creates a version config
-		VersionCreate(ctx context.Context, version string) error
+		VersionCreate(ctx context.Context, version, desc string) error
 
 		// VersionDelete deletes a version config
-		VersionDelete(ctx context.Context, name string) error
+		VersionDelete(ctx context.Context, version string) error
 
 		// VersionRaw returns the current version config content
 		VersionRaw(ctx context.Context, username, space, config, version string) ([]byte, error)

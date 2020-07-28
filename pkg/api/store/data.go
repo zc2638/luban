@@ -10,7 +10,7 @@ type User struct {
 }
 
 type Space struct {
-	Name string `json:"name"` // 名称
+	Name string `json:"name" yaml:"name"` // 名称
 }
 
 type Config struct {
@@ -18,9 +18,24 @@ type Config struct {
 	Desc    string `json:"desc" yaml:"desc"`       // 描述
 	Format  string `json:"format" yaml:"format"`   // 格式
 	Content string `json:"content" yaml:"content"` // 内容
+	Label   string `json:"label" yaml:"label"`     // 标签
 }
 
 type ConfigVersion struct {
-	Version string `json:"version"` // 版本号
-	Format  string `json:"format"`  // 格式
+	Version   string `json:"version" yaml:"version"`       // 版本号
+	Format    string `json:"format" yaml:"format"`         // 格式
+	Desc      string `json:"desc" yaml:"desc"`             // 描述
+	CreatedAt int64  `json:"created_at" yaml:"created_at"` // 创建时间
+}
+
+type ConfigVersionGroup []ConfigVersion
+
+func (cv ConfigVersionGroup) Len() int {
+	return len(cv)
+}
+func (cv ConfigVersionGroup) Swap(i, j int) {
+	cv[i], cv[j] = cv[j], cv[i]
+}
+func (cv ConfigVersionGroup) Less(i, j int) bool {
+	return cv[j].CreatedAt < cv[i].CreatedAt
 }
