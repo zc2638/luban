@@ -22,7 +22,6 @@ import (
 	"luban/global"
 	"luban/handler/api"
 	"luban/handler/web"
-	"luban/pkg/ctr"
 	"luban/pkg/server"
 	"net/http"
 )
@@ -56,7 +55,7 @@ func startServer(cmd *cobra.Command, args []string) error {
 func routes() http.Handler {
 	mux := chi.NewMux()
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		ctr.Str(w, "Hello Luban!")
+		http.Redirect(w, r, "/web/user/login/", http.StatusFound)
 	})
 	mux.Mount("/v1", api.New())
 	mux.Mount("/web", web.New())

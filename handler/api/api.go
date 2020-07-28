@@ -10,6 +10,7 @@ import (
 	"luban/handler/api/auth"
 	"luban/handler/api/config"
 	"luban/handler/api/space"
+	"luban/pkg/ctr"
 	"net/http"
 )
 
@@ -17,6 +18,9 @@ import (
 func New() http.Handler {
 	mux := chi.NewMux()
 	mux.Use(middleware.Recoverer, middleware.Logger, cors.AllowAll().Handler)
+	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctr.Str(w, "Hello Luban!")
+	}))
 	mux.Route("/auth", authRoute)
 	mux.Route("/raw/{username}/{space}/{config}", func(r chi.Router) {
 		r.Get("/", config.Raw())
