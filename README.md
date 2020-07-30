@@ -17,3 +17,8 @@ luban migrate [`command -c config/config.yaml`]
 ```shell script
 luban config new [`command -c config/config.local.yaml`]
 ```
+
+### User Operation
+```shell script
+luban user add [username] [password]
+```
