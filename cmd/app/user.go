@@ -27,9 +27,9 @@ import (
 // NewUserCmd represents the user command
 func NewUserCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:          "user",
-		Short:        "user operation.",
-		Long:         `user operation.`,
+		Use:   "user",
+		Short: "user operation.",
+		Long:  `user operation.`,
 	}
 	addCmd := &cobra.Command{
 		Use:          "add",
@@ -38,7 +38,15 @@ func NewUserCmd() *cobra.Command {
 		RunE:         userAdd,
 		SilenceUsage: true,
 	}
+	pwdResetCmd := &cobra.Command{
+		Use:          "pwd-reset",
+		Short:        "pwd reset operation",
+		Long:         `pwd reset operation.Reset the password to the current user.`,
+		RunE:         pwdReset,
+		SilenceUsage: true,
+	}
 	cmd.AddCommand(addCmd)
+	cmd.AddCommand(pwdResetCmd)
 	return cmd
 }
 
@@ -59,4 +67,17 @@ func userAdd(cmd *cobra.Command, args []string) error {
 		Username: username,
 		Pwd:      password,
 	})
+}
+
+func pwdReset(cmd *cobra.Command, args []string) error {
+	argsLen := len(args)
+	if argsLen < 2 {
+		return errs.New("need username and password!")
+	}
+	if argsLen > 2 {
+		return errs.New("unknown command argument: " + args[2])
+	}
+	username := args[0]
+	password := args[1]
+	return service.New().User().PwdReset(context.Background(), username, password)
 }

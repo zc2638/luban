@@ -55,7 +55,7 @@ func startServer(cmd *cobra.Command, args []string) error {
 func routes() http.Handler {
 	mux := chi.NewMux()
 	mux.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/web/user/login/", http.StatusFound)
+		http.Redirect(w, r, "/web/", http.StatusFound)
 	})
 	mux.Mount("/v1", api.New())
 	mux.Mount("/web", web.New())

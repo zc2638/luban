@@ -66,6 +66,13 @@ func (fs *FileSystem) PathKeys(path string) ([]string, error) {
 }
 
 func (fs *FileSystem) PathUpdate(target, path string) error {
+	exists, err := afero.Exists(fs.Fs, target)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return nil
+	}
 	return fs.Fs.Rename(target, path)
 }
 

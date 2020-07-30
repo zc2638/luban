@@ -11,6 +11,7 @@ import (
 	"luban/pkg/errs"
 	"luban/pkg/storage"
 	"luban/pkg/uuid"
+	"path/filepath"
 )
 
 type userService struct{}
@@ -64,6 +65,39 @@ func (s *userService) Create(ctx context.Context, user *store.User) error {
 	users = append(users, *user)
 	b, err := yaml.Marshal(&users)
 	if err != nil {
+		return err
+	}
+	return storage.New().Update(global.PathRoot, global.KeyUserFile, b)
+}
+
+func (s *userService) PwdReset(ctx context.Context, username, password string) error {
+	users, err := s.All(ctx)
+	if err != nil {
+		return err
+	}
+	list := make([]store.User, 0, len(users))
+	var code string
+	var user *store.User
+	for _, u := range users {
+		if u.Username == username {
+			code = u.Code
+			u.Pwd = password
+			u.Code = uuid.New()
+			user = &u
+		}
+		list = append(list, u)
+	}
+	if user == nil {
+		return ErrNotExist
+	}
+	b, err := yaml.Marshal(&list)
+	if err != nil {
+		return err
+	}
+	if err := storage.New().PathUpdate(
+		filepath.Join(global.PathData, code),
+		filepath.Join(global.PathData, user.Code),
+	); err != nil {
 		return err
 	}
 	return storage.New().Update(global.PathRoot, global.KeyUserFile, b)

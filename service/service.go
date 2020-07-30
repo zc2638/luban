@@ -30,6 +30,9 @@ type (
 
 		// Create creates a user
 		Create(ctx context.Context, user *store.User) error
+
+		// PwdReset resets the password to user
+		PwdReset(ctx context.Context, username, password string) error
 	}
 	SpaceService interface {
 		// List returns the space list
