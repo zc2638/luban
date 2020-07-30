@@ -16,8 +16,9 @@ const (
 )
 
 const (
-	KeyUserFile         = "user.manifest"
-	KeyManifest         = ".manifest"
-	KeyConfigDefault    = "default"
-	KeyConfigVersionExt = ".ver"
+	KeyUserFile            = "user.manifest"
+	KeyManifest            = ".manifest"
+	KeyConfigDefault       = "default"
+	KeyConfigVersionExt    = ".ver"
+	KeyConfigVersionLatest = "latest" + KeyConfigVersionExt
 )

@@ -25,6 +25,7 @@ type ConfigVersion struct {
 	Version   string `json:"version" yaml:"version"`       // 版本号
 	Format    string `json:"format" yaml:"format"`         // 格式
 	Desc      string `json:"desc" yaml:"desc"`             // 描述
+	IsLatest  bool   `json:"is_latest" yaml:"is_latest"`   // 是否默认
 	CreatedAt int64  `json:"created_at" yaml:"created_at"` // 创建时间
 }
 

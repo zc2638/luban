@@ -39,6 +39,7 @@ func NewServerCommand() *cobra.Command {
 		NewMigrateCmd(),
 		NewConfigCmd(),
 		NewDocCmd(),
+		NewUserCmd(),
 	)
 	cfgFileENV := os.Getenv("LUBAN_CONFIG")
 	var cfgFilePath string

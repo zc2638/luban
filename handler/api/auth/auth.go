@@ -8,6 +8,7 @@ import (
 	"luban/global"
 	"luban/pkg/api"
 	"luban/pkg/api/store"
+	"luban/pkg/compile"
 	"luban/pkg/ctr"
 	"luban/service"
 	"net/http"
@@ -18,6 +19,10 @@ func Register() http.HandlerFunc {
 		var params api.RegisterParams
 		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
+			return
+		}
+		if !compile.Username().MatchString(params.Username) {
+			ctr.BadRequest(w, compile.UsernameError)
 			return
 		}
 		user := &store.User{

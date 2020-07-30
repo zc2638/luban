@@ -194,12 +194,12 @@ func (s *configService) VersionList(ctx context.Context) ([]store.ConfigVersion,
 	return verGroup, nil
 }
 
-func (s *configService) VersionFind(ctx context.Context, name string) ([]byte, error) {
+func (s *configService) VersionFind(ctx context.Context, version string) ([]byte, error) {
 	path, err := s.getConfigPath(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return storage.New().Find(path, name+global.KeyConfigVersionExt)
+	return storage.New().Find(path, version+global.KeyConfigVersionExt)
 }
 
 func (s *configService) VersionCreate(ctx context.Context, version, desc string) error {
@@ -272,9 +272,4 @@ func (s *configService) VersionRaw(ctx context.Context, username, space, config,
 	}
 	path := filepath.Join(global.PathData, user.Code, space, config)
 	return storage.New().Find(path, version+global.KeyConfigVersionExt)
-}
-
-func (s *configService) VersionDefaultSetting(ctx context.Context, version string) error {
-	// TODO 直接创建一个latest config 文件
-	return nil
 }

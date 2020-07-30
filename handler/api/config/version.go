@@ -26,8 +26,8 @@ func VersionList() http.HandlerFunc {
 
 func VersionFind() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		name := chi.URLParam(r, "name")
-		info, err := service.New().Config().VersionFind(r.Context(), name)
+		version := chi.URLParam(r, "version")
+		info, err := service.New().Config().VersionFind(r.Context(), version)
 		if err != nil {
 			ctr.BadRequest(w, err)
 			return

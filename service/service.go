@@ -77,9 +77,6 @@ type (
 
 		// VersionRaw returns the current version config content
 		VersionRaw(ctx context.Context, username, space, config, version string) ([]byte, error)
-
-		// VersionDefaultSetting updates a config with a default version
-		VersionDefaultSetting(ctx context.Context, version string) error
 	}
 )
 
