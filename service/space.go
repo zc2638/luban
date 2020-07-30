@@ -117,11 +117,16 @@ func (s *spaceService) Delete(ctx context.Context) error {
 	}
 	target := ctr.ContextSpaceValue(ctx)
 	list := make([]store.Space, 0, len(spaces))
+	var current *store.Space
 	for _, space := range spaces {
 		if space.Name == target {
+			current = &space
 			continue
 		}
 		list = append(list, space)
+	}
+	if current == nil {
+		return ErrNotExist
 	}
 	b, err := yaml.Marshal(&list)
 	if err != nil {
