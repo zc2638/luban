@@ -21,4 +21,5 @@ luban config new [`command -c config/config.local.yaml`]
 ### User Operation
 ```shell script
 luban user add [username] [password]
+luban user pwd-reset [username] [password]
 ```

@@ -16,7 +16,7 @@ limitations under the License.
 package main
 
 import (
-	"luban/cmd/app"
+	"luban/cmd/ctl/app"
 	"os"
 )
 

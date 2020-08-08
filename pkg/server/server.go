@@ -48,10 +48,10 @@ func (s *Server) Run() error {
 			panic("服务监听异常：" + err.Error())
 		}
 	}()
-	return s.GracefulExitWeb()
+	return s.Exit()
 }
 
-func (s *Server) GracefulExitWeb() error {
+func (s *Server) Exit() error {
 	ch := make(chan os.Signal)
 	signal.Notify(ch, syscall.SIGTERM, syscall.SIGQUIT, syscall.SIGINT)
 	sig := <-ch

@@ -6,6 +6,7 @@ package database
 import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
 	"time"
 )
 
@@ -28,8 +29,10 @@ func (c *Config) Clone() *Config {
 }
 
 func New(cfg *Config) (*gorm.DB, error) {
-	dsn := buildMysqlDsn(cfg)
-	db, err := gorm.Open("mysql", dsn)
+	// TODO select driver by config
+	//dsn := buildMysqlDsn(cfg)
+	//db, err := gorm.Open("mysql", dsn)
+	db, err := gorm.Open("sqlite3", "luban.db")
 	if err != nil {
 		return nil, err
 	}

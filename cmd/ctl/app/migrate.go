@@ -18,6 +18,7 @@ package app
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"luban/global"
 	"luban/pkg/database/migration"
 )
 
@@ -35,14 +36,10 @@ func NewMigrateCmd() *cobra.Command {
 
 func migrate(cmd *cobra.Command, args []string) error {
 	fmt.Println("migration starting...")
-	cfg, err := ParseConfig()
+	cfg, err := global.ParseConfig(cfgFile)
 	if err != nil {
 		return err
 	}
-	if err := migration.InitDatabase(&cfg.Database); err != nil {
-		return err
-	}
-	fmt.Println("migration database successful")
 	if err := migration.InitTable(&cfg.Database); err != nil {
 		return err
 	}

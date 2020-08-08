@@ -4,9 +4,11 @@
 package space
 
 import (
-	"luban/pkg/api"
+	"luban/pkg/api/request"
+	"luban/pkg/api/response"
 	"luban/pkg/compile"
 	"luban/pkg/ctr"
+	"luban/pkg/database/data"
 	"luban/pkg/errs"
 	"luban/service"
 	"net/http"
@@ -19,13 +21,24 @@ func List() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
-		ctr.OK(w, list)
+		result := make([]response.SpaceResultItem, 0, len(list))
+		for _, v := range list {
+			result = append(result, response.SpaceResultItem{
+				SpaceID: v.SpaceID,
+				Name:    v.Name,
+				Timestamp: response.Timestamp{
+					CreatedTS: v.CreatedAt.Unix(),
+					UpdatedTS: v.UpdatedAt.Unix(),
+				},
+			})
+		}
+		ctr.OK(w, result)
 	}
 }
 
 func Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var params api.SpaceParams
+		var params request.SpaceParams
 		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -34,7 +47,8 @@ func Create() http.HandlerFunc {
 			ctr.BadRequest(w, errs.ErrInvalidSpace.With(compile.NameError))
 			return
 		}
-		if err := service.New().Space().Create(r.Context(), params.Name); err != nil {
+		space := &data.Space{Name: params.Name}
+		if err := service.New().Space().Create(r.Context(), space); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -44,7 +58,7 @@ func Create() http.HandlerFunc {
 
 func Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var params api.SpaceParams
+		var params request.SpaceParams
 		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -53,7 +67,8 @@ func Update() http.HandlerFunc {
 			ctr.BadRequest(w, errs.ErrInvalidSpace.With(compile.NameError))
 			return
 		}
-		if err := service.New().Space().Update(r.Context(), params.Name); err != nil {
+		space := &data.Space{Name: params.Name}
+		if err := service.New().Space().Update(r.Context(), space); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}

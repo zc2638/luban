@@ -1,7 +1,7 @@
 /**
  * Created by zc on 2020/6/9.
  */
-package api
+package request
 
 type RegisterParams struct {
 	Username string `json:"username"`
@@ -13,17 +13,11 @@ type LoginParams struct {
 	Password string `json:"password"`
 }
 
-type LoginResult struct {
-	Username string `json:"username"`
-	Token    string `json:"token"`
-	Host     string `json:"host"`
-}
-
 type SpaceParams struct {
 	Name string `json:"name"`
 }
 
-type ConfigParams struct {
+type ResourceParams struct {
 	Name    string `json:"name"`    // 名称
 	Desc    string `json:"desc"`    // 描述
 	Format  string `json:"format"`  // 格式
@@ -32,7 +26,7 @@ type ConfigParams struct {
 	Label   string `json:"label"`   // 标签
 }
 
-type ConfigVersionParams struct {
+type ResourceVersionParams struct {
 	Version string `json:"version"` // 版本号
 	Desc    string `json:"desc"`    // 描述
 }

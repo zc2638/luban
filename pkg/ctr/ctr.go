@@ -10,7 +10,7 @@ import (
 
 // Success writes ok message to the response.
 func Success(w http.ResponseWriter) {
-	Str(w, "ok")
+	Str(w, "success")
 }
 
 // Bytes writes the Bytes message to the response.

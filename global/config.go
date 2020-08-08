@@ -4,8 +4,13 @@
 package global
 
 import (
+	"fmt"
+	"github.com/mitchellh/go-homedir"
+	"github.com/mitchellh/mapstructure"
+	"github.com/spf13/viper"
 	"luban/pkg/database"
 	"luban/pkg/server"
+	"strings"
 )
 
 type Config struct {
@@ -18,4 +23,29 @@ func Environ() *Config {
 	cfg := &Config{}
 	cfg.Server.Secret = DefaultJwtSecret
 	return cfg
+}
+
+func ParseConfig(cfgPath string) (*Config, error) {
+	if cfgPath != "" {
+		viper.SetConfigFile(cfgPath)
+	} else {
+		home, err := homedir.Dir()
+		if err != nil {
+			return nil, err
+		}
+		viper.AddConfigPath(home)
+		viper.SetConfigName("config.yaml")
+	}
+	viper.SetEnvPrefix("LUBAN")
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	viper.AutomaticEnv()
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, err
+	}
+	fmt.Println("Using config file:", viper.ConfigFileUsed())
+	cfg := Environ()
+	err := viper.Unmarshal(cfg, func(dc *mapstructure.DecoderConfig) {
+		dc.TagName = "json"
+	})
+	return cfg, err
 }

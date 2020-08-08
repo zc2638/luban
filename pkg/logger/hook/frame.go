@@ -40,7 +40,7 @@ func (f *FrameContextHook) Fire(entry *logrus.Entry) error {
 	if n > 0 {
 		pc = pc[:n]
 		frames := runtime.CallersFrames(pc)
-		var chains []string
+		var chains strings.Builder
 		for {
 			frame, more := frames.Next()
 			skip := false
@@ -57,7 +57,8 @@ func (f *FrameContextHook) Fire(entry *logrus.Entry) error {
 				_, _ = buffer.WriteString(strconv.Itoa(frame.Line))
 				_, _ = buffer.WriteRune(' ')
 				_, _ = buffer.WriteString(frame.Function)
-				chains = append(chains, buffer.String())
+				_, _ = buffer.WriteString("\n")
+				chains.WriteString(buffer.String())
 			}
 			if !more {
 				break

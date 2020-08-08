@@ -13,7 +13,7 @@ type key int
 const (
 	ContextUserKey key = iota
 	ContextSpaceKey
-	ContextConfigKey
+	ContextResourceKey
 )
 
 // ContextWithUser returns a copy of parent in which the user value is set
@@ -40,12 +40,12 @@ func ContextSpaceValue(ctx context.Context) string {
 	return ctx.Value(ContextSpaceKey).(string)
 }
 
-// ContextWithConfig returns a copy of parent in which the config value is set
-func ContextWithConfig(parent context.Context, config string) context.Context {
-	return context.WithValue(parent, ContextConfigKey, config)
+// ContextWithResource returns a copy of parent in which the config value is set
+func ContextWithResource(parent context.Context, config string) context.Context {
+	return context.WithValue(parent, ContextResourceKey, config)
 }
 
-// ContextConfigValue returns the value of the config key on the ctx
-func ContextConfigValue(ctx context.Context) string {
-	return ctx.Value(ContextConfigKey).(string)
+// ContextResourceValue returns the value of the config key on the ctx
+func ContextResourceValue(ctx context.Context) string {
+	return ctx.Value(ContextResourceKey).(string)
 }

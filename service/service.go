@@ -5,7 +5,7 @@ package service
 
 import (
 	"context"
-	"luban/pkg/api/store"
+	"luban/pkg/database/data"
 	"luban/pkg/errs"
 )
 
@@ -16,70 +16,75 @@ type Interface interface {
 	// Space returns the SpaceService interface definition
 	Space() SpaceService
 
-	// Config returns the ConfigService interface definition
-	Config() ConfigService
+	// Config returns the ResourceService interface definition
+	Resource() ResourceService
 }
 
 type (
 	UserService interface {
-		// All returns the all users list
-		All(ctx context.Context) ([]store.User, error)
-
 		// FindByNameAndPwd returns the current user by username and password
-		FindByNameAndPwd(ctx context.Context, username, password string) (*store.User, error)
+		FindByNameAndPwd(ctx context.Context, username, password string) (*data.User, error)
+
+		// FindByUserID returns the current user by user id
+		FindByUserID(ctx context.Context, userID string) (*data.User, error)
 
 		// Create creates a user
-		Create(ctx context.Context, user *store.User) error
+		Create(ctx context.Context, user *data.User) error
 
 		// PwdReset resets the password to user
 		PwdReset(ctx context.Context, username, password string) error
 	}
 	SpaceService interface {
 		// List returns the space list
-		List(ctx context.Context) ([]store.Space, error)
+		List(ctx context.Context) ([]data.Space, error)
+
+		// Find returns the current space
+		Find(ctx context.Context) (*data.Space, error)
 
 		// Create creates a space
-		Create(ctx context.Context, name string) error
+		Create(ctx context.Context, space *data.Space) error
 
 		// Update updates the space info
-		Update(ctx context.Context, name string) error
+		Update(ctx context.Context, space *data.Space) error
 
 		// Delete deletes a space
 		Delete(ctx context.Context) error
 	}
-	ConfigService interface {
+	ResourceService interface {
 		// List returns the config list
-		List(ctx context.Context) ([]store.Config, error)
+		List(ctx context.Context) ([]data.Resource, error)
 
 		// Find returns the current config
-		Find(ctx context.Context) (*store.Config, error)
+		Find(ctx context.Context) (*data.Resource, error)
 
 		// Create creates a config in space
-		Create(ctx context.Context, config *store.Config) error
+		Create(ctx context.Context, resource *data.Resource) error
 
 		// Update updates the config info
-		Update(ctx context.Context, config *store.Config) error
+		Update(ctx context.Context, resource *data.Resource) error
 
 		// Delete deletes a config
 		Delete(ctx context.Context) error
 
 		// Raw returns the current config content
-		Raw(ctx context.Context, username, space, config string) ([]byte, error)
+		Raw(ctx context.Context, username, space, resource string) ([]byte, error)
 
 		// VersionList returns the version config list
-		VersionList(ctx context.Context) ([]store.ConfigVersion, error)
+		VersionList(ctx context.Context) ([]data.Version, error)
 
 		// VersionFind returns the current version config
-		VersionFind(ctx context.Context, version string) ([]byte, error)
+		VersionFind(ctx context.Context, id string) (*data.Version, error)
 
 		// VersionCreate creates a version config
-		VersionCreate(ctx context.Context, version, desc string) error
+		VersionCreate(ctx context.Context, version *data.Version) error
 
 		// VersionDelete deletes a version config
-		VersionDelete(ctx context.Context, version string) error
+		VersionDelete(ctx context.Context, id string) error
 
 		// VersionRaw returns the current version config content
-		VersionRaw(ctx context.Context, username, space, config, version string) ([]byte, error)
+		VersionRaw(ctx context.Context, username, space, resource, version string) ([]byte, error)
+	}
+	RunnerService interface {
 	}
 )
 
@@ -97,8 +102,8 @@ func (s *Service) Space() SpaceService {
 	return &spaceService{}
 }
 
-func (s *Service) Config() ConfigService {
-	return &configService{}
+func (s *Service) Resource() ResourceService {
+	return &resourceService{}
 }
 
 const (

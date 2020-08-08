@@ -5,9 +5,7 @@ package ctr
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"luban/global"
 	"luban/pkg/errs"
-	"path/filepath"
 )
 
 type JwtClaims struct {
@@ -16,15 +14,9 @@ type JwtClaims struct {
 }
 
 type JwtUserInfo struct {
-	Code     string `json:"code"`
+	UserID   string `json:"user_id"`
 	Username string `json:"username"`
-}
-
-func (u *JwtUserInfo) UserPath() string {
-	if u.Code == "" {
-		return ""
-	}
-	return filepath.Join(global.PathData, u.Code)
+	Pwd      string `json:"pwd"`
 }
 
 // JwtCreate returns the JWT token by claims and secret

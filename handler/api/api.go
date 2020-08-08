@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"luban/handler/api/auth"
-	"luban/handler/api/config"
+	"luban/handler/api/resource"
 	"luban/handler/api/space"
 	"luban/pkg/ctr"
 	"net/http"
@@ -22,9 +22,9 @@ func New() http.Handler {
 		ctr.Str(w, "Hello Luban!")
 	}))
 	mux.Route("/auth", authRoute)
-	mux.Route("/raw/{username}/{space}/{config}", func(r chi.Router) {
-		r.Get("/", config.Raw())
-		r.Get("/{version}", config.VersionRaw())
+	mux.Route("/raw/{username}/{space}/{resource}", func(r chi.Router) {
+		r.Get("/", resource.Raw())
+		r.Get("/{version}", resource.VersionRaw())
 	})
 	mux.Group(func(r chi.Router) {
 		r.Use(JwtAuth)
@@ -53,29 +53,29 @@ func spaceRoute(r chi.Router) {
 		cr.Use(SpaceAuth)
 		cr.Put("/", space.Update())
 		cr.Delete("/", space.Delete())
-		cr.Route("/config", configRoute)
+		cr.Route("/resource", resourceRoute)
 	})
 }
 
-// configRoute handle config routing related
-func configRoute(r chi.Router) {
-	r.Get("/", config.List())
-	r.Post("/", config.Create())
-	r.Route("/{config}", func(cr chi.Router) {
-		cr.Use(ConfigAuth)
-		cr.Get("/", config.Info())
-		cr.Put("/", config.Update())
-		cr.Delete("/", config.Delete())
-		cr.Route("/version", configVersionRoute)
+// resourceRoute handle resource routing related
+func resourceRoute(r chi.Router) {
+	r.Get("/", resource.List())
+	r.Post("/", resource.Create())
+	r.Route("/{resource}", func(cr chi.Router) {
+		cr.Use(ResourceAuth)
+		cr.Get("/", resource.Info())
+		cr.Put("/", resource.Update())
+		cr.Delete("/", resource.Delete())
+		cr.Route("/version", resourceVersionRoute)
 	})
 }
 
-// configVersionRoute handle config version routing related
-func configVersionRoute(r chi.Router) {
-	r.Get("/", config.VersionList())
-	r.Post("/", config.VersionCreate())
-	r.Route("/{name}", func(cr chi.Router) {
-		cr.Get("/", config.VersionFind())
-		cr.Delete("/", config.VersionDelete())
+// resourceVersionRoute handle resource version routing related
+func resourceVersionRoute(r chi.Router) {
+	r.Get("/", resource.VersionList())
+	r.Post("/", resource.VersionCreate())
+	r.Route("/{version}", func(cr chi.Router) {
+		cr.Get("/", resource.VersionFind())
+		cr.Delete("/", resource.VersionDelete())
 	})
 }

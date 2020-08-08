@@ -41,9 +41,9 @@ const (
 	// ErrInvalidSpace is returned when the api request space is invalid.
 	ErrInvalidSpace = Error("Invalid or missing space")
 
-	// ErrInvalidConfig is returned when the api request config is invalid.
-	ErrInvalidConfig = Error("Invalid or missing config")
+	// ErrInvalidResource is returned when the api request config is invalid.
+	ErrInvalidResource = Error("Invalid or missing resource")
 
-	// ErrInvalidConfigVersion is returned when the api request config version is invalid.
-	ErrInvalidConfigVersion = Error("Invalid or missing config version")
+	// ErrInvalidResourceVersion is returned when the api request config version is invalid.
+	ErrInvalidResourceVersion = Error("Invalid or missing resource version")
 )

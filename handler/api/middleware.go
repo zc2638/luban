@@ -27,20 +27,13 @@ func JwtAuth(next http.Handler) http.Handler {
 			return
 		}
 		ctx := ctr.ContextWithUser(r.Context(), &claims.User)
-		users, err := service.New().User().All(ctx)
+		user, err := service.New().User().FindByUserID(ctx, claims.User.UserID)
 		if err != nil {
-			ctr.Unauthorized(w, errs.ErrInvalidToken.With(err))
+			ctr.Unauthorized(w, errs.ErrInvalidToken.With(errs.New("user not exist")))
 			return
 		}
-		var exist bool
-		for _, user := range users {
-			if user.Code == claims.User.Code {
-				exist = true
-				break
-			}
-		}
-		if !exist {
-			ctr.Unauthorized(w, errs.ErrInvalidToken.With(errs.New("user not exist")))
+		if user.Pwd != claims.User.Pwd {
+			ctr.Unauthorized(w, errs.ErrInvalidToken.With(errs.New("user password is out")))
 			return
 		}
 		next.ServeHTTP(w, r.WithContext(ctx))
@@ -62,15 +55,15 @@ func SpaceAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-// ConfigAuth returns a handler to verify config value
-func ConfigAuth(next http.Handler) http.Handler {
+// ResourceAuth returns a handler to verify config value
+func ResourceAuth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		config := chi.URLParam(r, "config")
-		if config == "" || !compile.Name().MatchString(config) {
-			ctr.BadRequest(w, errs.ErrInvalidConfig)
+		resource := chi.URLParam(r, "resource")
+		if resource == "" || !compile.Name().MatchString(resource) {
+			ctr.BadRequest(w, errs.ErrInvalidResource)
 			return
 		}
-		ctx := ctr.ContextWithConfig(r.Context(), config)
+		ctx := ctr.ContextWithResource(r.Context(), resource)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 	return http.HandlerFunc(fn)

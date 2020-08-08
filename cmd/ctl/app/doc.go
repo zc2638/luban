@@ -19,6 +19,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/docgen"
 	"github.com/spf13/cobra"
+	"luban/cmd/internal/route"
 	"os"
 )
 
@@ -35,7 +36,7 @@ func NewDocCmd() *cobra.Command {
 }
 
 func buildDoc(cmd *cobra.Command, args []string) error {
-	r := routes()
+	r := route.New()
 	doc := docgen.JSONRoutesDoc(r.(chi.Router))
 	file, err := os.OpenFile("api_doc.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0766)
 	if err != nil {
