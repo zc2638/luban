@@ -40,5 +40,6 @@ func InitTable(cfg *database.Config) error {
 		&data.Version{},
 		&data.Secret{},
 		&data.Pipeline{},
+		&data.Task{},
 	).Error
 }

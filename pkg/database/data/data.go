@@ -71,6 +71,28 @@ type Pipeline struct {
 	SpaceID    string `json:"space_id"`                       // 空间标识
 	ResourceID string `json:"config_id"`                      // 资源标识
 	Name       string `json:"name"`                           // 名称
-	Content    string `json:"content"`                        // 内容
+	Spec       string `json:"spec"`                           // 定义
+	DateTime
+}
+
+type Task struct {
+	TaskID     string    `json:"task_id"`     // 唯一标识
+	PipelineID string    `json:"pipeline_id"` // 流水线标识
+	Spec       string    `json:"content"`     // 流水线定义
+	Data       string    `json:"data"`        // 资源内容
+	Status     int       `json:"status"`      // 状态
+	StartAt    time.Time `json:"start_at"`    // 开始时间
+	EndAt      time.Time `json:"end_at"`      // 结束时间
+	DateTime
+}
+
+type TaskStep struct {
+	StepID  string    `json:"step_id"`  // 唯一标识
+	TaskID  string    `json:"task_id"`  // 任务标识
+	Name    string    `json:"name"`     // 名称
+	Status  string    `json:"status"`   // 状态
+	Log     string    `json:"log"`      // 日志
+	StartAt time.Time `json:"start_at"` // 开始时间
+	EndAt   time.Time `json:"end_at"`   // 结束时间
 	DateTime
 }

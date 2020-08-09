@@ -16,11 +16,18 @@ type Interface interface {
 	// Space returns the SpaceService interface definition
 	Space() SpaceService
 
-	// Config returns the ResourceService interface definition
+	// Resource returns the ResourceService interface definition
 	Resource() ResourceService
+
+	// Pipeline returns the PipelineService interface definition
+	Pipeline() PipelineService
+
+	// Task returns the TaskService interface definition
+	Task() TaskService
 }
 
 type (
+	// UserService defines the user related operations
 	UserService interface {
 		// FindByNameAndPwd returns the current user by username and password
 		FindByNameAndPwd(ctx context.Context, username, password string) (*data.User, error)
@@ -34,6 +41,8 @@ type (
 		// PwdReset resets the password to user
 		PwdReset(ctx context.Context, username, password string) error
 	}
+
+	// SpaceService defines the space related operations
 	SpaceService interface {
 		// List returns the space list
 		List(ctx context.Context) ([]data.Space, error)
@@ -50,6 +59,8 @@ type (
 		// Delete deletes a space
 		Delete(ctx context.Context) error
 	}
+
+	// ResourceService defines the resource related operations
 	ResourceService interface {
 		// List returns the config list
 		List(ctx context.Context) ([]data.Resource, error)
@@ -84,14 +95,23 @@ type (
 		// VersionRaw returns the current version config content
 		VersionRaw(ctx context.Context, username, space, resource, version string) ([]byte, error)
 	}
-	RunnerService interface {
+
+	// PipelineService defines the pipeline related operations
+	PipelineService interface {
+	}
+
+	// TaskService defines the task related operations
+	TaskService interface {
 	}
 )
+
+// Default returns the default service, change it if need.
+var Default = &Service{}
 
 type Service struct{}
 
 func New() Interface {
-	return &Service{}
+	return Default
 }
 
 func (s *Service) User() UserService {
@@ -104,6 +124,14 @@ func (s *Service) Space() SpaceService {
 
 func (s *Service) Resource() ResourceService {
 	return &resourceService{}
+}
+
+func (s *Service) Pipeline() PipelineService {
+	panic("implement me")
+}
+
+func (s *Service) Task() TaskService {
+	panic("implement me")
 }
 
 const (
