@@ -62,46 +62,68 @@ type (
 
 	// ResourceService defines the resource related operations
 	ResourceService interface {
-		// List returns the config list
+		// List returns the resource list
 		List(ctx context.Context) ([]data.Resource, error)
 
-		// Find returns the current config
+		// Find returns the current resource
 		Find(ctx context.Context) (*data.Resource, error)
 
-		// Create creates a config in space
+		// Create creates a resource in space
 		Create(ctx context.Context, resource *data.Resource) error
 
-		// Update updates the config info
+		// Update updates the resource info
 		Update(ctx context.Context, resource *data.Resource) error
 
-		// Delete deletes a config
+		// Delete deletes a resource
 		Delete(ctx context.Context) error
 
-		// Raw returns the current config content
+		// Raw returns the current resource content
 		Raw(ctx context.Context, username, space, resource string) ([]byte, error)
 
-		// VersionList returns the version config list
+		// VersionList returns the version resource list
 		VersionList(ctx context.Context) ([]data.Version, error)
 
-		// VersionFind returns the current version config
+		// VersionFind returns the current version resource
 		VersionFind(ctx context.Context, id string) (*data.Version, error)
 
-		// VersionCreate creates a version config
+		// VersionCreate creates a version resource
 		VersionCreate(ctx context.Context, version *data.Version) error
 
-		// VersionDelete deletes a version config
+		// VersionDelete deletes a version resource
 		VersionDelete(ctx context.Context, id string) error
 
-		// VersionRaw returns the current version config content
+		// VersionRaw returns the current version resource content
 		VersionRaw(ctx context.Context, username, space, resource, version string) ([]byte, error)
 	}
 
 	// PipelineService defines the pipeline related operations
 	PipelineService interface {
+		// List returns the pipeline list
+		List(ctx context.Context) ([]data.Pipeline, error)
+
+		// Find returns the current pipeline
+		Find(ctx context.Context, id string) (*data.Pipeline, error)
+
+		// Create creates a pipeline
+		Create(ctx context.Context, pipeline *data.Pipeline) error
+
+		// Update updates the pipeline info
+		Update(ctx context.Context, pipeline *data.Pipeline) error
+
+		// Delete deletes a pipeline
+		Delete(ctx context.Context, id string) error
 	}
 
 	// TaskService defines the task related operations
 	TaskService interface {
+		// List returns the task list
+		List(ctx context.Context) ([]data.Task, error)
+
+		// Find returns the current task
+		Find(ctx context.Context, id string) (*data.Task, error)
+
+		// Create creates a task
+		Create(ctx context.Context, task *data.Task) error
 	}
 )
 
