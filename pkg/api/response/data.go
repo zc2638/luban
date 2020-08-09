@@ -39,7 +39,7 @@ type ResourceResultItem struct {
 type VersionResultItem struct {
 	VersionID  string `json:"version_id"`
 	ResourceID string `json:"resource_id"`
-	Name       string `json:"name"`
+	Version    string `json:"version"`
 	Format     string `json:"format"`
 	Desc       string `json:"desc"`
 	Content    string `json:"content"`

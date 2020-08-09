@@ -51,7 +51,7 @@ type Resource struct {
 type Version struct {
 	VersionID  string `json:"version_id" gorm:"primary_key"` // 唯一标识
 	ResourceID string `json:"resource_id"`                   // 资源标识
-	Name       string `json:"name"`                          // 名称
+	Version    string `json:"version"`                       // 版本号
 	Format     string `json:"format"`                        // 格式
 	Desc       string `json:"desc"`                          // 描述
 	Content    string `json:"content"`                       // 内容

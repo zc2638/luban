@@ -27,7 +27,7 @@ func VersionList() http.HandlerFunc {
 			result = append(result, response.VersionResultItem{
 				VersionID:  v.VersionID,
 				ResourceID: v.ResourceID,
-				Name:       v.Name,
+				Version:    v.Version,
 				Format:     v.Format,
 				Desc:       v.Desc,
 				Content:    v.Content,
@@ -52,7 +52,7 @@ func VersionFind() http.HandlerFunc {
 		ctr.OK(w, response.VersionResultItem{
 			VersionID:  info.VersionID,
 			ResourceID: info.ResourceID,
-			Name:       info.Name,
+			Version:    info.Version,
 			Format:     info.Format,
 			Desc:       info.Desc,
 			Content:    info.Content,
@@ -76,8 +76,8 @@ func VersionCreate() http.HandlerFunc {
 			return
 		}
 		version := &data.Version{
-			Name: params.Version,
-			Desc: params.Desc,
+			Version: params.Version,
+			Desc:    params.Desc,
 		}
 		if err := service.New().Resource().VersionCreate(r.Context(), version); err != nil {
 			ctr.BadRequest(w, err)

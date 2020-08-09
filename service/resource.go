@@ -143,7 +143,7 @@ func (s *resourceService) VersionFindByName(ctx context.Context, name string) (*
 	var version data.Version
 	db := global.DB().Where(&data.Version{
 		ResourceID: resource,
-		Name:       name,
+		Version:    name,
 	}).First(&version)
 	if db.Error == nil {
 		return &version, nil
@@ -155,7 +155,7 @@ func (s *resourceService) VersionFindByName(ctx context.Context, name string) (*
 }
 
 func (s *resourceService) VersionCreate(ctx context.Context, version *data.Version) error {
-	if _, err := s.FindByName(ctx, version.Name); err == nil {
+	if _, err := s.FindByName(ctx, version.Version); err == nil {
 		return ErrExist
 	}
 	resource, err := s.Find(ctx)
