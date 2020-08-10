@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"luban/pkg/database"
 	"luban/pkg/server"
+	"os"
 	"strings"
 )
 
@@ -39,11 +40,15 @@ func ParseConfig(cfgPath string) (*Config, error) {
 	viper.SetEnvPrefix("LUBAN")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
+	cfg := Environ()
 	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(*os.PathError); ok {
+			fmt.Println("Warning: not find config file.")
+			return cfg, nil
+		}
 		return nil, err
 	}
 	fmt.Println("Using config file:", viper.ConfigFileUsed())
-	cfg := Environ()
 	err := viper.Unmarshal(cfg, func(dc *mapstructure.DecoderConfig) {
 		dc.TagName = "json"
 	})

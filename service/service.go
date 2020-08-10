@@ -116,16 +116,16 @@ type (
 		List(ctx context.Context) ([]data.Pipeline, error)
 
 		// Find returns the current pipeline
-		Find(ctx context.Context, id string) (*data.Pipeline, error)
+		Find(ctx context.Context) (*data.Pipeline, error)
 
 		// Create creates a pipeline
 		Create(ctx context.Context, pipeline *data.Pipeline) error
 
 		// Update updates the pipeline info
-		Update(ctx context.Context, id string, pipeline *data.Pipeline) error
+		Update(ctx context.Context, pipeline *data.Pipeline) error
 
 		// Delete deletes a pipeline
-		Delete(ctx context.Context, id string) error
+		Delete(ctx context.Context) error
 	}
 
 	// TaskService defines the task related operations
@@ -134,13 +134,13 @@ type (
 		List(ctx context.Context) ([]data.Task, error)
 
 		// Find returns the current task
-		Find(ctx context.Context, id string) (*data.Task, error)
+		Find(ctx context.Context) (*data.Task, error)
 
 		// Create creates a task
 		Create(ctx context.Context, task *data.Task, steps []data.TaskStep) error
 
 		// Update updates the task info
-		Update(ctx context.Context, id string, task *data.Task) error
+		Update(ctx context.Context, task *data.Task) error
 
 		// StepList returns the task step list
 		StepList(ctx context.Context) ([]data.TaskStep, error)

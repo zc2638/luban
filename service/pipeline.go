@@ -24,12 +24,13 @@ func (s *pipelineService) List(ctx context.Context) ([]data.Pipeline, error) {
 	return nil, db.Error
 }
 
-func (s *pipelineService) Find(ctx context.Context, id string) (*data.Pipeline, error) {
+func (s *pipelineService) Find(ctx context.Context) (*data.Pipeline, error) {
 	space := ctr.ContextSpaceValue(ctx)
+	target := ctr.ContextPipelineValue(ctx)
 	var pipeline data.Pipeline
 	db := s.db.Where(&data.Pipeline{
 		SpaceID:    space,
-		PipelineID: id,
+		PipelineID: target,
 	}).First(&pipeline)
 	if db.Error == nil {
 		return &pipeline, nil
@@ -66,8 +67,8 @@ func (s *pipelineService) Create(ctx context.Context, pipeline *data.Pipeline) e
 	return s.db.Create(pipeline).Error
 }
 
-func (s *pipelineService) Update(ctx context.Context, id string, pipeline *data.Pipeline) error {
-	current, err := s.Find(ctx, id)
+func (s *pipelineService) Update(ctx context.Context, pipeline *data.Pipeline) error {
+	current, err := s.Find(ctx)
 	if err != nil {
 		return err
 	}
@@ -76,10 +77,11 @@ func (s *pipelineService) Update(ctx context.Context, id string, pipeline *data.
 	return s.db.Save(pipeline).Error
 }
 
-func (s *pipelineService) Delete(ctx context.Context, id string) error {
+func (s *pipelineService) Delete(ctx context.Context) error {
 	space := ctr.ContextSpaceValue(ctx)
+	target := ctr.ContextPipelineValue(ctx)
 	return s.db.Where(&data.Pipeline{
 		SpaceID:    space,
-		PipelineID: id,
+		PipelineID: target,
 	}).Delete(&data.Pipeline{}).Error
 }

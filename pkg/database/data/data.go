@@ -90,9 +90,15 @@ type TaskStep struct {
 	StepID  string    `json:"step_id"`  // 唯一标识
 	TaskID  string    `json:"task_id"`  // 任务标识
 	Name    string    `json:"name"`     // 名称
-	Status  string    `json:"status"`   // 状态
+	Status  int       `json:"status"`   // 状态
 	Log     string    `json:"log"`      // 日志
 	StartAt time.Time `json:"start_at"` // 开始时间
 	EndAt   time.Time `json:"end_at"`   // 结束时间
 	DateTime
 }
+
+const (
+	TaskStatusPending int = iota
+	TaskStatusSuccess
+	TaskStatusFail
+)

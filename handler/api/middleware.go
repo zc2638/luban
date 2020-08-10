@@ -81,3 +81,17 @@ func PipelineAuth(next http.Handler) http.Handler {
 	}
 	return http.HandlerFunc(fn)
 }
+
+// TaskAuth returns a handler to verify task value
+func TaskAuth(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		task := chi.URLParam(r, "task")
+		if task == "" {
+			ctr.BadRequest(w, errs.ErrInvalidTask)
+			return
+		}
+		ctx := ctr.ContextWithTask(r.Context(), task)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+	return http.HandlerFunc(fn)
+}

@@ -27,6 +27,17 @@ type ResourceParams struct {
 }
 
 type ResourceVersionParams struct {
-	Version string `json:"version"` // 版本号
-	Desc    string `json:"desc"`    // 描述
+	Version string `json:"version"`
+	Desc    string `json:"desc"`
+}
+
+type PipelineParams struct {
+	ResourceID string `json:"resource_id"`
+	Name       string `json:"name"`
+	Spec       string `json:"spec"`
+}
+
+type TaskStepParams struct {
+	Status int    `json:"status"`
+	Log    string `json:"log"`
 }

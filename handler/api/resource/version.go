@@ -41,7 +41,7 @@ func VersionList() http.HandlerFunc {
 	}
 }
 
-func VersionFind() http.HandlerFunc {
+func VersionInfo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		version := chi.URLParam(r, "version")
 		info, err := service.New().Resource().VersionFind(r.Context(), version)

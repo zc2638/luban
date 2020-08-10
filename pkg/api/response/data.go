@@ -45,3 +45,25 @@ type VersionResultItem struct {
 	Content    string `json:"content"`
 	Timestamp
 }
+
+type TaskResult struct {
+	TaskID     string               `json:"task_id"`
+	PipelineID string               `json:"pipeline_id"`
+	Status     int                  `json:"status"`
+	StartTS    int64                `json:"start_ts"`
+	EndTS      int64                `json:"end_ts"`
+	CreatedTS  int64                `json:"created_ts"`
+	UpdatedTS  int64                `json:"updated_ts"`
+	Steps      []TaskStepResultItem `json:"steps"`
+}
+
+type TaskStepResultItem struct {
+	StepID    string `json:"step_id"`
+	Name      string `json:"name"`
+	Status    int    `json:"status"`
+	Log       string `json:"log"`
+	StartTS   int64  `json:"start_ts"`
+	EndTS     int64  `json:"end_ts"`
+	CreatedTS int64  `json:"created_ts"`
+	UpdatedTS int64  `json:"updated_ts"`
+}

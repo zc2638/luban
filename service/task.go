@@ -25,12 +25,13 @@ func (s *taskService) List(ctx context.Context) ([]data.Task, error) {
 	return nil, db.Error
 }
 
-func (s *taskService) Find(ctx context.Context, id string) (*data.Task, error) {
+func (s *taskService) Find(ctx context.Context) (*data.Task, error) {
 	pipeline := ctr.ContextPipelineValue(ctx)
+	target := ctr.ContextTaskValue(ctx)
 	var task data.Task
 	db := s.db.Where(&data.Task{
 		PipelineID: pipeline,
-		TaskID:     id,
+		TaskID:     target,
 	}).First(&task)
 	if db.Error == nil {
 		return &task, nil
@@ -45,6 +46,7 @@ func (s *taskService) Create(ctx context.Context, task *data.Task, steps []data.
 	s.db = s.db.Begin()
 	pipeline := ctr.ContextPipelineValue(ctx)
 	task.PipelineID = pipeline
+	task.Status = data.TaskStatusPending
 	task.TaskID = uuid.New()
 	task.StartAt = time.Now()
 	if err := s.db.Create(task).Error; err != nil {
@@ -62,13 +64,15 @@ func (s *taskService) Create(ctx context.Context, task *data.Task, steps []data.
 	return nil
 }
 
-func (s *taskService) Update(ctx context.Context, id string, task *data.Task) error {
-	current, err := s.Find(ctx, id)
+func (s *taskService) Update(ctx context.Context, task *data.Task) error {
+	current, err := s.Find(ctx)
 	if err != nil {
 		return err
 	}
 	task.TaskID = current.TaskID
 	task.PipelineID = current.PipelineID
+	task.Spec = current.Spec
+	task.Data = current.Data
 	task.CreatedAt = current.CreatedAt
 	return s.db.Save(task).Error
 }
@@ -126,6 +130,7 @@ func (s *taskService) StepCreate(ctx context.Context, step *data.TaskStep) error
 	}
 	task := ctr.ContextTaskValue(ctx)
 	step.TaskID = task
+	step.Status = data.TaskStatusPending
 	step.StepID = uuid.New()
 	step.StartAt = time.Now()
 	return s.db.Create(step).Error
@@ -138,6 +143,32 @@ func (s *taskService) StepUpdate(ctx context.Context, id string, step *data.Task
 	}
 	step.TaskID = current.TaskID
 	step.StepID = current.StepID
+	step.Name = current.Name
 	step.CreatedAt = current.CreatedAt
-	return s.db.Save(step).Error
+	if err := s.db.Save(step).Error; err != nil {
+		return err
+	}
+	// 更新task状态
+	if step.Status == data.TaskStatusFail {
+		task := &data.Task{
+			Status: data.TaskStatusFail,
+			EndAt:  step.EndAt,
+		}
+		return s.Update(ctx, task)
+	}
+	task := ctr.ContextTaskValue(ctx)
+	var not data.TaskStep
+	db := s.db.Where(&data.TaskStep{
+		TaskID: task,
+	}).Not(&data.TaskStep{
+		Status: data.TaskStatusSuccess,
+	}).First(&not)
+	if db.RecordNotFound() {
+		task := &data.Task{
+			Status: data.TaskStatusSuccess,
+			EndAt:  step.EndAt,
+		}
+		return s.Update(ctx, task)
+	}
+	return db.Error
 }

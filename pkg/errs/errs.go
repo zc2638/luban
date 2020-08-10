@@ -49,4 +49,7 @@ const (
 
 	// ErrInvalidPipeline is returned when the api request pipeline is invalid.
 	ErrInvalidPipeline = Error("Invalid or missing pipeline")
+
+	// ErrInvalidTask is returned when the api request task is invalid.
+	ErrInvalidTask = Error("Invalid or missing task")
 )

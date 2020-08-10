@@ -8,8 +8,10 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"luban/handler/api/auth"
+	"luban/handler/api/pipeline"
 	"luban/handler/api/resource"
 	"luban/handler/api/space"
+	"luban/handler/api/task"
 	"luban/pkg/ctr"
 	"net/http"
 )
@@ -75,7 +77,37 @@ func resourceVersionRoute(r chi.Router) {
 	r.Get("/", resource.VersionList())
 	r.Post("/", resource.VersionCreate())
 	r.Route("/{version}", func(cr chi.Router) {
-		cr.Get("/", resource.VersionFind())
+		cr.Get("/", resource.VersionInfo())
 		cr.Delete("/", resource.VersionDelete())
 	})
+}
+
+// pipelineRoute handle pipeline routing related
+func pipelineRoute(r chi.Router) {
+	r.Get("/", pipeline.List())
+	r.Post("/", pipeline.Create())
+	r.Route("/{pipeline}", func(cr chi.Router) {
+		cr.Use(PipelineAuth)
+		cr.Get("/", pipeline.Info())
+		cr.Put("/", pipeline.Update())
+		cr.Delete("/", pipeline.Delete())
+		cr.Route("/task", taskRoute)
+	})
+}
+
+// taskRoute handle task routing related
+func taskRoute(r chi.Router) {
+	r.Get("/", task.List())
+	r.Post("/", task.Create())
+	r.Route("/{task}", func(cr chi.Router) {
+		cr.Use(TaskAuth)
+		cr.Get("/", task.Info())
+		cr.Route("/step", taskStepRoute)
+	})
+}
+
+// taskStepRoute handle task step routing related
+func taskStepRoute(r chi.Router) {
+	r.Get("/", task.StepList())
+	r.Put("/{step}", task.StepUpdate())
 }
