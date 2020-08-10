@@ -46,4 +46,7 @@ const (
 
 	// ErrInvalidResourceVersion is returned when the api request config version is invalid.
 	ErrInvalidResourceVersion = Error("Invalid or missing resource version")
+
+	// ErrInvalidPipeline is returned when the api request pipeline is invalid.
+	ErrInvalidPipeline = Error("Invalid or missing pipeline")
 )

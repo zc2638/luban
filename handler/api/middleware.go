@@ -6,7 +6,6 @@ package api
 import (
 	"github.com/go-chi/chi"
 	"luban/global"
-	"luban/pkg/compile"
 	"luban/pkg/ctr"
 	"luban/pkg/errs"
 	"luban/service"
@@ -45,7 +44,7 @@ func JwtAuth(next http.Handler) http.Handler {
 func SpaceAuth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		space := chi.URLParam(r, "space")
-		if space == "" || !compile.Name().MatchString(space) {
+		if space == "" {
 			ctr.BadRequest(w, errs.ErrInvalidSpace)
 			return
 		}
@@ -55,15 +54,29 @@ func SpaceAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-// ResourceAuth returns a handler to verify config value
+// ResourceAuth returns a handler to verify resource value
 func ResourceAuth(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		resource := chi.URLParam(r, "resource")
-		if resource == "" || !compile.Name().MatchString(resource) {
+		if resource == "" {
 			ctr.BadRequest(w, errs.ErrInvalidResource)
 			return
 		}
 		ctx := ctr.ContextWithResource(r.Context(), resource)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+	return http.HandlerFunc(fn)
+}
+
+// PipelineAuth returns a handler to verify pipeline value
+func PipelineAuth(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		pipeline := chi.URLParam(r, "pipeline")
+		if pipeline == "" {
+			ctr.BadRequest(w, errs.ErrInvalidPipeline)
+			return
+		}
+		ctx := ctr.ContextWithPipeline(r.Context(), pipeline)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 	return http.HandlerFunc(fn)

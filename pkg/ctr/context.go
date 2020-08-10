@@ -14,6 +14,8 @@ const (
 	ContextUserKey key = iota
 	ContextSpaceKey
 	ContextResourceKey
+	ContextPipelineKey
+	ContextTaskKey
 )
 
 // ContextWithUser returns a copy of parent in which the user value is set
@@ -40,12 +42,32 @@ func ContextSpaceValue(ctx context.Context) string {
 	return ctx.Value(ContextSpaceKey).(string)
 }
 
-// ContextWithResource returns a copy of parent in which the config value is set
-func ContextWithResource(parent context.Context, config string) context.Context {
-	return context.WithValue(parent, ContextResourceKey, config)
+// ContextWithResource returns a copy of parent in which the resource value is set
+func ContextWithResource(parent context.Context, resource string) context.Context {
+	return context.WithValue(parent, ContextResourceKey, resource)
 }
 
-// ContextResourceValue returns the value of the config key on the ctx
+// ContextResourceValue returns the value of the resource key on the ctx
 func ContextResourceValue(ctx context.Context) string {
 	return ctx.Value(ContextResourceKey).(string)
+}
+
+// ContextWithPipeline returns a copy of parent in which the pipeline value is set
+func ContextWithPipeline(parent context.Context, pipeline string) context.Context {
+	return context.WithValue(parent, ContextPipelineKey, pipeline)
+}
+
+// ContextPipelineValue returns the value of the pipeline key on the ctx
+func ContextPipelineValue(ctx context.Context) string {
+	return ctx.Value(ContextPipelineKey).(string)
+}
+
+// ContextWithTask returns a copy of parent in which the task value is set
+func ContextWithTask(parent context.Context, task string) context.Context {
+	return context.WithValue(parent, ContextTaskKey, task)
+}
+
+// ContextTaskValue returns the value of the task key on the ctx
+func ContextTaskValue(ctx context.Context) string {
+	return ctx.Value(ContextTaskKey).(string)
 }

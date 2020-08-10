@@ -5,14 +5,12 @@ package service
 
 import (
 	"context"
-	"github.com/jinzhu/gorm"
-	"luban/global"
 	"luban/pkg/ctr"
 	"luban/pkg/database/data"
 	"luban/pkg/uuid"
 )
 
-type spaceService struct{}
+type spaceService struct{ service }
 
 func (s *spaceService) List(ctx context.Context) ([]data.Space, error) {
 	user, err := ctr.ContextUserFrom(ctx)
@@ -20,10 +18,10 @@ func (s *spaceService) List(ctx context.Context) ([]data.Space, error) {
 		return nil, err
 	}
 	var spaces []data.Space
-	db := global.DB().Where(&data.Space{
+	db := s.db.Where(&data.Space{
 		UserID: user.UserID,
 	}).Find(&spaces)
-	if db.Error == nil || gorm.IsRecordNotFoundError(db.Error) {
+	if db.Error == nil || db.RecordNotFound() {
 		return spaces, nil
 	}
 	return nil, db.Error
@@ -36,14 +34,14 @@ func (s *spaceService) Find(ctx context.Context) (*data.Space, error) {
 	}
 	target := ctr.ContextSpaceValue(ctx)
 	var space data.Space
-	db := global.DB().Where(&data.Space{
+	db := s.db.Where(&data.Space{
 		UserID:  user.UserID,
 		SpaceID: target,
 	}).First(&space)
 	if db.Error == nil {
 		return &space, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -55,14 +53,14 @@ func (s *spaceService) FindByName(ctx context.Context, name string) (*data.Space
 		return nil, err
 	}
 	var space data.Space
-	db := global.DB().Where(&data.Space{
+	db := s.db.Where(&data.Space{
 		UserID: user.UserID,
 		Name:   name,
 	}).First(&space)
 	if db.Error == nil {
 		return &space, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -78,7 +76,7 @@ func (s *spaceService) Create(ctx context.Context, space *data.Space) error {
 	}
 	space.SpaceID = uuid.New()
 	space.UserID = user.UserID
-	return global.DB().Create(space).Error
+	return s.db.Create(space).Error
 }
 
 func (s *spaceService) Update(ctx context.Context, space *data.Space) error {
@@ -89,7 +87,7 @@ func (s *spaceService) Update(ctx context.Context, space *data.Space) error {
 	space.SpaceID = current.SpaceID
 	space.UserID = current.UserID
 	space.CreatedAt = current.CreatedAt
-	return global.DB().Save(space).Error
+	return s.db.Save(space).Error
 }
 
 func (s *spaceService) Delete(ctx context.Context) error {
@@ -98,7 +96,7 @@ func (s *spaceService) Delete(ctx context.Context) error {
 		return err
 	}
 	target := ctr.ContextSpaceValue(ctx)
-	return global.DB().Where(&data.Space{
+	return s.db.Where(&data.Space{
 		UserID:  user.UserID,
 		SpaceID: target,
 	}).Delete(&data.Space{}).Error

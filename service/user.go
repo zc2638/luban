@@ -5,22 +5,20 @@ package service
 
 import (
 	"context"
-	"github.com/jinzhu/gorm"
-	"luban/global"
 	"luban/pkg/database/data"
 	"luban/pkg/errs"
 	"luban/pkg/uuid"
 )
 
-type userService struct{}
+type userService struct{ service }
 
 func (s *userService) Find(ctx context.Context, name string) (*data.User, error) {
 	var user data.User
-	db := global.DB().Where(&data.User{Username: name}).First(&user)
+	db := s.db.Where(&data.User{Username: name}).First(&user)
 	if db.Error == nil {
 		return &user, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, nil
 	}
 	return nil, db.Error
@@ -42,11 +40,11 @@ func (s *userService) FindByNameAndPwd(ctx context.Context, username, password s
 
 func (s *userService) FindByUserID(ctx context.Context, userID string) (*data.User, error) {
 	var user data.User
-	db := global.DB().Where(&data.User{UserID: userID}).First(&user)
+	db := s.db.Where(&data.User{UserID: userID}).First(&user)
 	if db.Error == nil {
 		return &user, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, errs.New("user not found")
 	}
 	return nil, db.Error
@@ -62,7 +60,7 @@ func (s *userService) Create(ctx context.Context, user *data.User) error {
 		return errs.New("Duplicate username")
 	}
 	user.UserID = uuid.New()
-	return global.DB().Create(user).Error
+	return s.db.Create(user).Error
 }
 
 func (s *userService) PwdReset(ctx context.Context, username, password string) error {
@@ -74,5 +72,5 @@ func (s *userService) PwdReset(ctx context.Context, username, password string) e
 		return errs.New("user not found")
 	}
 	current.Pwd = password
-	return global.DB().Save(current).Error
+	return s.db.Save(current).Error
 }

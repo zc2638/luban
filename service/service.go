@@ -5,9 +5,23 @@ package service
 
 import (
 	"context"
+	"github.com/jinzhu/gorm"
+	"luban/global"
 	"luban/pkg/database/data"
 	"luban/pkg/errs"
 )
+
+type Service interface {
+	Init()
+}
+
+type service struct {
+	db *gorm.DB
+}
+
+func (s *service) Init() {
+	s.db = global.DB()
+}
 
 type Interface interface {
 	// User returns the UserService interface definition
@@ -108,7 +122,7 @@ type (
 		Create(ctx context.Context, pipeline *data.Pipeline) error
 
 		// Update updates the pipeline info
-		Update(ctx context.Context, pipeline *data.Pipeline) error
+		Update(ctx context.Context, id string, pipeline *data.Pipeline) error
 
 		// Delete deletes a pipeline
 		Delete(ctx context.Context, id string) error
@@ -123,37 +137,64 @@ type (
 		Find(ctx context.Context, id string) (*data.Task, error)
 
 		// Create creates a task
-		Create(ctx context.Context, task *data.Task) error
+		Create(ctx context.Context, task *data.Task, steps []data.TaskStep) error
+
+		// Update updates the task info
+		Update(ctx context.Context, id string, task *data.Task) error
+
+		// StepList returns the task step list
+		StepList(ctx context.Context) ([]data.TaskStep, error)
+
+		// StepFind returns the current task step
+		StepFind(ctx context.Context, id string) (*data.TaskStep, error)
+
+		// StepCreate creates a task step
+		StepCreate(ctx context.Context, step *data.TaskStep) error
+
+		// StepUpdate updates the task step info
+		StepUpdate(ctx context.Context, id string, step *data.TaskStep) error
 	}
 )
 
 // Default returns the default service, change it if need.
-var Default = &Service{}
+var Default = &DefaultService{}
 
-type Service struct{}
+type DefaultService struct{}
 
 func New() Interface {
 	return Default
 }
 
-func (s *Service) User() UserService {
-	return &userService{}
+func (s *DefaultService) Init(svc Service) { svc.Init() }
+
+func (s *DefaultService) User() UserService {
+	svc := &userService{}
+	s.Init(svc)
+	return svc
 }
 
-func (s *Service) Space() SpaceService {
-	return &spaceService{}
+func (s *DefaultService) Space() SpaceService {
+	svc := &spaceService{}
+	s.Init(svc)
+	return svc
 }
 
-func (s *Service) Resource() ResourceService {
-	return &resourceService{}
+func (s *DefaultService) Resource() ResourceService {
+	svc := &resourceService{}
+	s.Init(svc)
+	return svc
 }
 
-func (s *Service) Pipeline() PipelineService {
-	panic("implement me")
+func (s *DefaultService) Pipeline() PipelineService {
+	svc := &pipelineService{}
+	s.Init(svc)
+	return svc
 }
 
-func (s *Service) Task() TaskService {
-	panic("implement me")
+func (s *DefaultService) Task() TaskService {
+	svc := &taskService{}
+	s.Init(svc)
+	return svc
 }
 
 const (

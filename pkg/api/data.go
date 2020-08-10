@@ -1,7 +1,7 @@
 /**
  * Created by zc on 2020/8/2.
  */
-package data
+package api
 
 import (
 	"sync"

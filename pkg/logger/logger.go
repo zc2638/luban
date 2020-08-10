@@ -11,21 +11,21 @@ import (
  * Created by zc on 2020-04-16.
  */
 var (
-	infoE  *logrus.Logger
-	warnE  *logrus.Logger
-	errorE *logrus.Logger
+	InfoE  *logrus.Logger
+	WarnE  *logrus.Logger
+	ErrorE *logrus.Logger
 )
 
 func init() {
-	if infoE == nil {
-		infoE = NewEngine(SetLevel(logrus.InfoLevel))
+	if InfoE == nil {
+		InfoE = NewEngine(SetLevel(logrus.InfoLevel))
 	}
-	if warnE == nil {
-		warnE = NewEngine(SetLevel(logrus.WarnLevel))
+	if WarnE == nil {
+		WarnE = NewEngine(SetLevel(logrus.WarnLevel))
 	}
-	if errorE == nil {
-		errorE = NewEngine(SetLevel(logrus.ErrorLevel))
-		errorE.AddHook(hook.NewFrameContextHook(0, nil))
+	if ErrorE == nil {
+		ErrorE = NewEngine(SetLevel(logrus.ErrorLevel))
+		ErrorE.AddHook(hook.NewFrameContextHook(0, nil))
 	}
 }
 
@@ -34,15 +34,15 @@ type Config struct {
 }
 
 func New(config *Config) {
-	infoE = NewEngine(SetLevel(logrus.InfoLevel))
-	warnE = NewEngine(SetLevel(logrus.WarnLevel))
-	errorE = NewEngine(SetLevel(logrus.ErrorLevel))
+	InfoE = NewEngine(SetLevel(logrus.InfoLevel))
+	WarnE = NewEngine(SetLevel(logrus.WarnLevel))
+	ErrorE = NewEngine(SetLevel(logrus.ErrorLevel))
 	if config.Output != "" {
-		infoE.AddHook(hook.NewHook("info").SetDir(config.Output))
-		warnE.AddHook(hook.NewHook("warn").SetDir(config.Output))
-		errorE.AddHook(hook.NewHook("error").SetDir(config.Output))
+		InfoE.AddHook(hook.NewHook("info").SetDir(config.Output))
+		WarnE.AddHook(hook.NewHook("warn").SetDir(config.Output))
+		ErrorE.AddHook(hook.NewHook("error").SetDir(config.Output))
 	}
-	errorE.AddHook(hook.NewFrameContextHook(30, nil))
+	ErrorE.AddHook(hook.NewFrameContextHook(30, nil))
 }
 
 func NewEngine(options ...Option) *logrus.Logger {
@@ -58,37 +58,37 @@ func NewEngine(options ...Option) *logrus.Logger {
 }
 
 func Print(args ...interface{}) {
-	infoE.Print(args...)
+	InfoE.Print(args...)
 }
 
 func Printf(format string, args ...interface{}) {
-	infoE.Printf(format, args...)
+	InfoE.Printf(format, args...)
 }
 
 func Println(args ...interface{}) {
-	infoE.Println(args...)
+	InfoE.Println(args...)
 }
 
 func Error(args ...interface{}) {
-	errorE.Error(args...)
+	ErrorE.Error(args...)
 }
 
 func Errorf(format string, args ...interface{}) {
-	errorE.Errorf(format, args...)
+	ErrorE.Errorf(format, args...)
 }
 
 func Errorln(args ...interface{}) {
-	errorE.Errorln(args...)
+	ErrorE.Errorln(args...)
 }
 
 func Warn(args ...interface{}) {
-	warnE.Warn(args...)
+	WarnE.Warn(args...)
 }
 
 func Warnf(format string, args ...interface{}) {
-	warnE.Warnf(format, args...)
+	WarnE.Warnf(format, args...)
 }
 
 func Warnln(args ...interface{}) {
-	warnE.Warnln(args...)
+	WarnE.Warnln(args...)
 }

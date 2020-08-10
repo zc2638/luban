@@ -5,20 +5,18 @@ package service
 
 import (
 	"context"
-	"github.com/jinzhu/gorm"
-	"luban/global"
 	"luban/pkg/ctr"
 	"luban/pkg/database/data"
 	"luban/pkg/uuid"
 )
 
-type resourceService struct{}
+type resourceService struct{ service }
 
 func (s *resourceService) List(ctx context.Context) ([]data.Resource, error) {
 	space := ctr.ContextSpaceValue(ctx)
 	var resources []data.Resource
-	db := global.DB().Where(&data.Resource{SpaceID: space}).Find(&resources)
-	if db.Error == nil || gorm.IsRecordNotFoundError(db.Error) {
+	db := s.db.Where(&data.Resource{SpaceID: space}).Find(&resources)
+	if db.Error == nil || db.RecordNotFound() {
 		return resources, nil
 	}
 	return nil, db.Error
@@ -28,14 +26,14 @@ func (s *resourceService) Find(ctx context.Context) (*data.Resource, error) {
 	space := ctr.ContextSpaceValue(ctx)
 	target := ctr.ContextResourceValue(ctx)
 	var resource data.Resource
-	db := global.DB().Where(&data.Resource{
+	db := s.db.Where(&data.Resource{
 		SpaceID:    space,
 		ResourceID: target,
 	}).First(&resource)
 	if db.Error == nil {
 		return &resource, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -44,14 +42,14 @@ func (s *resourceService) Find(ctx context.Context) (*data.Resource, error) {
 func (s *resourceService) FindByName(ctx context.Context, name string) (*data.Resource, error) {
 	space := ctr.ContextSpaceValue(ctx)
 	var resource data.Resource
-	db := global.DB().Where(&data.Resource{
+	db := s.db.Where(&data.Resource{
 		SpaceID: space,
 		Name:    name,
 	}).First(&resource)
 	if db.Error == nil {
 		return &resource, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -64,7 +62,7 @@ func (s *resourceService) Create(ctx context.Context, resource *data.Resource) e
 	}
 	resource.ResourceID = uuid.New()
 	resource.SpaceID = space
-	return global.DB().Create(resource).Error
+	return s.db.Create(resource).Error
 }
 
 func (s *resourceService) Update(ctx context.Context, resource *data.Resource) error {
@@ -75,13 +73,13 @@ func (s *resourceService) Update(ctx context.Context, resource *data.Resource) e
 	resource.ResourceID = current.ResourceID
 	resource.SpaceID = current.SpaceID
 	resource.CreatedAt = current.CreatedAt
-	return global.DB().Save(resource).Error
+	return s.db.Save(resource).Error
 }
 
 func (s *resourceService) Delete(ctx context.Context) error {
 	space := ctr.ContextSpaceValue(ctx)
 	target := ctr.ContextResourceValue(ctx)
-	return global.DB().Where(&data.Resource{
+	return s.db.Where(&data.Resource{
 		ResourceID: target,
 		SpaceID:    space,
 	}).Delete(&data.Resource{}).Error
@@ -113,10 +111,10 @@ func (s *resourceService) Raw(ctx context.Context, username, space, resource str
 func (s *resourceService) VersionList(ctx context.Context) ([]data.Version, error) {
 	resource := ctr.ContextResourceValue(ctx)
 	var versions []data.Version
-	db := global.DB().Where(&data.Version{
+	db := s.db.Where(&data.Version{
 		ResourceID: resource,
 	}).First(&versions)
-	if db.Error == nil || gorm.IsRecordNotFoundError(db.Error) {
+	if db.Error == nil || db.RecordNotFound() {
 		return versions, nil
 	}
 	return nil, db.Error
@@ -125,14 +123,14 @@ func (s *resourceService) VersionList(ctx context.Context) ([]data.Version, erro
 func (s *resourceService) VersionFind(ctx context.Context, id string) (*data.Version, error) {
 	resource := ctr.ContextResourceValue(ctx)
 	var version data.Version
-	db := global.DB().Where(&data.Version{
+	db := s.db.Where(&data.Version{
 		ResourceID: resource,
 		VersionID:  id,
 	}).First(&version)
 	if db.Error == nil {
 		return &version, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -141,14 +139,14 @@ func (s *resourceService) VersionFind(ctx context.Context, id string) (*data.Ver
 func (s *resourceService) VersionFindByName(ctx context.Context, name string) (*data.Version, error) {
 	resource := ctr.ContextResourceValue(ctx)
 	var version data.Version
-	db := global.DB().Where(&data.Version{
+	db := s.db.Where(&data.Version{
 		ResourceID: resource,
 		Version:    name,
 	}).First(&version)
 	if db.Error == nil {
 		return &version, nil
 	}
-	if gorm.IsRecordNotFoundError(db.Error) {
+	if db.RecordNotFound() {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -166,12 +164,12 @@ func (s *resourceService) VersionCreate(ctx context.Context, version *data.Versi
 	version.ResourceID = resource.ResourceID
 	version.Format = resource.Format
 	version.Content = resource.Content
-	return global.DB().Create(version).Error
+	return s.db.Create(version).Error
 }
 
 func (s *resourceService) VersionDelete(ctx context.Context, id string) error {
 	resource := ctr.ContextResourceValue(ctx)
-	return global.DB().Where(&data.Version{
+	return s.db.Where(&data.Version{
 		ResourceID: resource,
 		VersionID:  id,
 	}).Delete(&data.Version{}).Error

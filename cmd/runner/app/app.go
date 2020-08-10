@@ -13,10 +13,8 @@ import (
 	"github.com/spf13/cobra"
 	"golang.org/x/sync/errgroup"
 	"luban/cmd/internal/env"
-	"luban/pkg/api/data"
+	"luban/pkg/api"
 	"luban/pkg/drone"
-	"luban/pkg/errs"
-	"luban/service/client"
 	"os"
 	"os/signal"
 	"syscall"
@@ -81,22 +79,22 @@ func listen(ctx context.Context) error {
 func exec() {
 	fmt.Println("runner: polling queue start")
 	// TODO 查询队列
-	cli := client.New("http://localhost:8080")
-	task, err := cli.Request(context.Background())
-	if err != nil {
-		fmt.Println(errs.Error("runner: cannot get queue item").With(err).Error())
-		return
-	}
+	//cli := client.New("http://localhost:8080")
+	//task, err := cli.Request(context.Background())
+	//if err != nil {
+	//	fmt.Println(errs.Error("runner: cannot get queue item").With(err).Error())
+	//	return
+	//}
 	//ctx, cancel := context.WithCancel(context.Background())
 	//defer cancel()
 	// TODO 异步监听取消信号
 	// TODO 执行
-	if err := start(task); err != nil {
-		fmt.Println(err)
-	}
+	//if err := start(task); err != nil {
+	//	fmt.Println(err)
+	//}
 }
 
-func start(task *data.Task) error {
+func start(task *api.Task) error {
 	// TODO 获取触发器流程配置
 	// TODO 获取配置内容
 	// TODO 转换到engine可执行结构体
