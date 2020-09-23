@@ -13,6 +13,9 @@ import (
 func New() http.Handler {
 	mux := chi.NewMux()
 	mux.Mount("/", fileSystem())
+	//mux.Handle("/", http.FileServer(http.Dir("public/dist")))
+	//mux.Handle("/static", http.FileServer(http.Dir("public/dist/static")))
+	//mux.Handle("/icons", http.FileServer(http.Dir("public/dist/icons")))
 	return mux
 }
 

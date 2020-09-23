@@ -40,7 +40,5 @@ func InitTable(cfg *database.Config) error {
 		&data.Pipeline{},
 		&data.Task{},
 		&data.TaskStep{},
-		&data.Stage{},
-		&data.StageStep{},
 	)
 }

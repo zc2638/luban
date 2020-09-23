@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-const DefaultPort = 9090
+const DefaultPort = 2639
 
 type Config struct {
 	Host   string `json:"host" yaml:"host"`

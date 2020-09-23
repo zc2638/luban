@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/zc2638/drone-control/handler"
 	"luban/handler/api/auth"
 	"luban/handler/api/pipeline"
 	"luban/handler/api/resource"
@@ -23,6 +24,7 @@ func New() http.Handler {
 	mux.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctr.Str(w, "Hello Luban!")
 	}))
+	mux.Mount("/control", handler.API())
 	mux.Route("/auth", authRoute)
 	mux.Route("/raw/{username}/{space}/{resource}", func(r chi.Router) {
 		r.Get("/", resource.Raw())

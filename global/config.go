@@ -8,6 +8,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
+	"github.com/zc2638/drone-control/global"
 	"luban/pkg/database"
 	"luban/pkg/server"
 	"os"
@@ -17,6 +18,7 @@ import (
 type Config struct {
 	Server   server.Config   `json:"server" yaml:"server"`
 	Database database.Config `json:"database" yaml:"database"`
+	Control  global.Config   `json:"control" yaml:"control"`
 }
 
 func Environ() *Config {

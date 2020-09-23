@@ -3,7 +3,10 @@
  */
 package global
 
-import "gorm.io/gorm"
+import (
+	"github.com/zc2638/drone-control/global"
+	"gorm.io/gorm"
+)
 
 func DB() *gorm.DB {
 	return db
@@ -11,4 +14,8 @@ func DB() *gorm.DB {
 
 func Cfg() *Config {
 	return config
+}
+
+func ControlCfg() *global.Config {
+	return global.Cfg()
 }
