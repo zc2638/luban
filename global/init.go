@@ -4,7 +4,7 @@
 package global
 
 import (
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"luban/pkg/database"
 )
 

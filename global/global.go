@@ -3,7 +3,7 @@
  */
 package global
 
-import "github.com/jinzhu/gorm"
+import "gorm.io/gorm"
 
 func DB() *gorm.DB {
 	return db

@@ -6,6 +6,7 @@ package service
 import (
 	"context"
 	"luban/pkg/ctr"
+	"luban/pkg/database"
 	"luban/pkg/database/data"
 	"luban/pkg/uuid"
 )
@@ -18,7 +19,7 @@ func (s *pipelineService) List(ctx context.Context) ([]data.Pipeline, error) {
 	db := s.db.Where(&data.Pipeline{
 		SpaceID: space,
 	}).Find(&pipelines)
-	if db.Error == nil || db.RecordNotFound() {
+	if db.Error == nil || database.RecordNotFound(db.Error) {
 		return pipelines, nil
 	}
 	return nil, db.Error
@@ -35,7 +36,7 @@ func (s *pipelineService) Find(ctx context.Context) (*data.Pipeline, error) {
 	if db.Error == nil {
 		return &pipeline, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -51,7 +52,7 @@ func (s *pipelineService) FindByName(ctx context.Context, name string) (*data.Pi
 	if db.Error == nil {
 		return &pipeline, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error

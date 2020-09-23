@@ -5,7 +5,7 @@ package service
 
 import (
 	"context"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 	"luban/global"
 	"luban/pkg/database/data"
 	"luban/pkg/errs"
@@ -43,6 +43,9 @@ type Interface interface {
 type (
 	// UserService defines the user related operations
 	UserService interface {
+		// Find returns the current user by username
+		Find(ctx context.Context, name string) (*data.User, error)
+
 		// FindByNameAndPwd returns the current user by username and password
 		FindByNameAndPwd(ctx context.Context, username, password string) (*data.User, error)
 
@@ -63,6 +66,9 @@ type (
 
 		// Find returns the current space
 		Find(ctx context.Context) (*data.Space, error)
+
+		// FindByName returns the current space by name
+		FindByName(ctx context.Context, name string) (*data.Space, error)
 
 		// Create creates a space
 		Create(ctx context.Context, space *data.Space) error
@@ -132,6 +138,9 @@ type (
 	TaskService interface {
 		// List returns the task list
 		List(ctx context.Context) ([]data.Task, error)
+
+		// ListUnComplete returns the not complete task list
+		ListUnComplete(ctx context.Context) ([]data.Task, error)
 
 		// Find returns the current task
 		Find(ctx context.Context) (*data.Task, error)

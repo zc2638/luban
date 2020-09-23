@@ -56,6 +56,7 @@ func spaceRoute(r chi.Router) {
 		cr.Put("/", space.Update())
 		cr.Delete("/", space.Delete())
 		cr.Route("/resource", resourceRoute)
+		cr.Route("/pipeline", pipelineRoute)
 	})
 }
 
@@ -102,12 +103,5 @@ func taskRoute(r chi.Router) {
 	r.Route("/{task}", func(cr chi.Router) {
 		cr.Use(TaskAuth)
 		cr.Get("/", task.Info())
-		cr.Route("/step", taskStepRoute)
 	})
-}
-
-// taskStepRoute handle task step routing related
-func taskStepRoute(r chi.Router) {
-	r.Get("/", task.StepList())
-	r.Put("/{step}", task.StepUpdate())
 }

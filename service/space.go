@@ -6,6 +6,7 @@ package service
 import (
 	"context"
 	"luban/pkg/ctr"
+	"luban/pkg/database"
 	"luban/pkg/database/data"
 	"luban/pkg/uuid"
 )
@@ -21,7 +22,7 @@ func (s *spaceService) List(ctx context.Context) ([]data.Space, error) {
 	db := s.db.Where(&data.Space{
 		UserID: user.UserID,
 	}).Find(&spaces)
-	if db.Error == nil || db.RecordNotFound() {
+	if db.Error == nil || database.RecordNotFound(db.Error) {
 		return spaces, nil
 	}
 	return nil, db.Error
@@ -41,7 +42,7 @@ func (s *spaceService) Find(ctx context.Context) (*data.Space, error) {
 	if db.Error == nil {
 		return &space, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -60,7 +61,7 @@ func (s *spaceService) FindByName(ctx context.Context, name string) (*data.Space
 	if db.Error == nil {
 		return &space, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error

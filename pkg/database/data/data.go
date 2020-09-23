@@ -4,13 +4,14 @@
 package data
 
 import (
+	"gorm.io/gorm"
 	"time"
 )
 
 type DateTime struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt *time.Time `sql:"index"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 type User struct {
@@ -99,6 +100,7 @@ type TaskStep struct {
 
 const (
 	TaskStatusPending int = iota
+	TaskStatusRunning
 	TaskStatusSuccess
 	TaskStatusFail
 )

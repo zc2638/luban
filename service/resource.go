@@ -6,6 +6,7 @@ package service
 import (
 	"context"
 	"luban/pkg/ctr"
+	"luban/pkg/database"
 	"luban/pkg/database/data"
 	"luban/pkg/uuid"
 )
@@ -16,7 +17,7 @@ func (s *resourceService) List(ctx context.Context) ([]data.Resource, error) {
 	space := ctr.ContextSpaceValue(ctx)
 	var resources []data.Resource
 	db := s.db.Where(&data.Resource{SpaceID: space}).Find(&resources)
-	if db.Error == nil || db.RecordNotFound() {
+	if db.Error == nil || database.RecordNotFound(db.Error) {
 		return resources, nil
 	}
 	return nil, db.Error
@@ -33,7 +34,7 @@ func (s *resourceService) Find(ctx context.Context) (*data.Resource, error) {
 	if db.Error == nil {
 		return &resource, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -49,7 +50,7 @@ func (s *resourceService) FindByName(ctx context.Context, name string) (*data.Re
 	if db.Error == nil {
 		return &resource, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -86,7 +87,7 @@ func (s *resourceService) Delete(ctx context.Context) error {
 }
 
 func (s *resourceService) Raw(ctx context.Context, username, space, resource string) ([]byte, error) {
-	us := &userService{}
+	us := New().User()
 	user, err := us.Find(ctx, username)
 	if err != nil {
 		return nil, err
@@ -95,7 +96,7 @@ func (s *resourceService) Raw(ctx context.Context, username, space, resource str
 		UserID: user.UserID,
 		Pwd:    user.Pwd,
 	})
-	ss := &spaceService{}
+	ss := New().Space()
 	spaceData, err := ss.FindByName(ctx, space)
 	if err != nil {
 		return nil, err
@@ -114,7 +115,7 @@ func (s *resourceService) VersionList(ctx context.Context) ([]data.Version, erro
 	db := s.db.Where(&data.Version{
 		ResourceID: resource,
 	}).First(&versions)
-	if db.Error == nil || db.RecordNotFound() {
+	if db.Error == nil || database.RecordNotFound(db.Error) {
 		return versions, nil
 	}
 	return nil, db.Error
@@ -130,7 +131,7 @@ func (s *resourceService) VersionFind(ctx context.Context, id string) (*data.Ver
 	if db.Error == nil {
 		return &version, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -146,7 +147,7 @@ func (s *resourceService) VersionFindByName(ctx context.Context, name string) (*
 	if db.Error == nil {
 		return &version, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -176,7 +177,7 @@ func (s *resourceService) VersionDelete(ctx context.Context, id string) error {
 }
 
 func (s *resourceService) VersionRaw(ctx context.Context, username, space, resource, version string) ([]byte, error) {
-	us := &userService{}
+	us := New().User()
 	user, err := us.Find(ctx, username)
 	if err != nil {
 		return nil, err
@@ -185,7 +186,7 @@ func (s *resourceService) VersionRaw(ctx context.Context, username, space, resou
 		UserID: user.UserID,
 		Pwd:    user.Pwd,
 	})
-	ss := &spaceService{}
+	ss := New().Space()
 	spaceData, err := ss.FindByName(ctx, space)
 	if err != nil {
 		return nil, err

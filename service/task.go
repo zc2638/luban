@@ -6,6 +6,7 @@ package service
 import (
 	"context"
 	"luban/pkg/ctr"
+	"luban/pkg/database"
 	"luban/pkg/database/data"
 	"luban/pkg/uuid"
 	"time"
@@ -19,7 +20,20 @@ func (s *taskService) List(ctx context.Context) ([]data.Task, error) {
 	db := s.db.Where(&data.Task{
 		PipelineID: pipeline,
 	}).Find(&tasks)
-	if db.Error == nil || db.RecordNotFound() {
+	if db.Error == nil || database.RecordNotFound(db.Error) {
+		return tasks, nil
+	}
+	return nil, db.Error
+}
+
+func (s *taskService) ListUnComplete(ctx context.Context) ([]data.Task, error) {
+	var tasks []data.Task
+	db := s.db.Where(&data.Task{
+		Status: data.TaskStatusPending,
+	}).Or(&data.Task{
+		Status: data.TaskStatusRunning,
+	}).Find(&tasks)
+	if db.Error == nil || database.RecordNotFound(db.Error) {
 		return tasks, nil
 	}
 	return nil, db.Error
@@ -36,7 +50,7 @@ func (s *taskService) Find(ctx context.Context) (*data.Task, error) {
 	if db.Error == nil {
 		return &task, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -44,8 +58,12 @@ func (s *taskService) Find(ctx context.Context) (*data.Task, error) {
 
 func (s *taskService) Create(ctx context.Context, task *data.Task, steps []data.TaskStep) error {
 	s.db = s.db.Begin()
-	pipeline := ctr.ContextPipelineValue(ctx)
-	task.PipelineID = pipeline
+	pipeline, err := New().Pipeline().Find(ctx)
+	if err != nil {
+		return err
+	}
+	task.PipelineID = pipeline.PipelineID
+	task.Spec = pipeline.Spec
 	task.Status = data.TaskStatusPending
 	task.TaskID = uuid.New()
 	task.StartAt = time.Now()
@@ -86,7 +104,7 @@ func (s *taskService) StepList(ctx context.Context) ([]data.TaskStep, error) {
 	if db.Error == nil {
 		return steps, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -102,7 +120,7 @@ func (s *taskService) StepFind(ctx context.Context, id string) (*data.TaskStep, 
 	if db.Error == nil {
 		return &step, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -118,7 +136,7 @@ func (s *taskService) StepFindByName(ctx context.Context, name string) (*data.Ta
 	if db.Error == nil {
 		return &step, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, ErrNotExist
 	}
 	return nil, db.Error
@@ -163,7 +181,7 @@ func (s *taskService) StepUpdate(ctx context.Context, id string, step *data.Task
 	}).Not(&data.TaskStep{
 		Status: data.TaskStatusSuccess,
 	}).First(&not)
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		task := &data.Task{
 			Status: data.TaskStatusSuccess,
 			EndAt:  step.EndAt,

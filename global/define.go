@@ -9,16 +9,4 @@ const HeaderTokenKey = "Stone-Token"
 
 const DefaultJwtSecret = "Stone"
 
-const (
-	PathRoot     = "luban"
-	PathData     = PathRoot + "/data"
-	PathUserFile = PathRoot + "/" + KeyUserFile
-)
-
-const (
-	KeyUserFile            = "user.manifest"
-	KeyManifest            = ".manifest"
-	KeyConfigDefault       = "default"
-	KeyConfigVersionExt    = ".ver"
-	KeyConfigVersionLatest = "latest" + KeyConfigVersionExt
-)
+const PathTaskLog = "tasklog"

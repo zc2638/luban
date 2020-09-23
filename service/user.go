@@ -5,6 +5,7 @@ package service
 
 import (
 	"context"
+	"luban/pkg/database"
 	"luban/pkg/database/data"
 	"luban/pkg/errs"
 	"luban/pkg/uuid"
@@ -18,7 +19,7 @@ func (s *userService) Find(ctx context.Context, name string) (*data.User, error)
 	if db.Error == nil {
 		return &user, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, nil
 	}
 	return nil, db.Error
@@ -44,7 +45,7 @@ func (s *userService) FindByUserID(ctx context.Context, userID string) (*data.Us
 	if db.Error == nil {
 		return &user, nil
 	}
-	if db.RecordNotFound() {
+	if database.RecordNotFound(db.Error) {
 		return nil, errs.New("user not found")
 	}
 	return nil, db.Error

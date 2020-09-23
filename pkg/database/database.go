@@ -5,8 +5,9 @@ package database
 
 import (
 	"github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
-	_ "github.com/mattn/go-sqlite3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 	"time"
 )
 
@@ -30,17 +31,26 @@ func (c *Config) Clone() *Config {
 
 func New(cfg *Config) (*gorm.DB, error) {
 	// TODO select driver by config
-	//dsn := buildMysqlDsn(cfg)
-	//db, err := gorm.Open("mysql", dsn)
-	db, err := gorm.Open("sqlite3", "luban.db")
+	cfg.Debug = true
+	db, err := gorm.Open(
+		sqlite.Open("luban.db"),
+		&gorm.Config{
+			SkipDefaultTransaction: true,
+			NamingStrategy: schema.NamingStrategy{
+				SingularTable: true,
+			},
+		},
+	)
 	if err != nil {
 		return nil, err
 	}
-
-	db.DB().SetMaxIdleConns(10)               // 连接池的空闲数大小
-	db.DB().SetMaxOpenConns(100)              // 最大打开连接数
-	db.DB().SetConnMaxLifetime(time.Hour * 6) // 连接最长存活时间
-	db.SingularTable(true)                    // 禁用复数表名
+	sqlDB, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+	sqlDB.SetMaxIdleConns(10)               // 最大空闲连接数
+	sqlDB.SetMaxOpenConns(100)              // 最大打开连接数
+	sqlDB.SetConnMaxLifetime(time.Hour * 6) // 连接最长存活时间
 	if cfg.Debug {
 		db = db.Debug()
 	}

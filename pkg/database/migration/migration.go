@@ -21,7 +21,6 @@ func InitDatabase(cfg *database.Config) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 	return db.Exec("CREATE DATABASE IF NOT EXISTS " + cfg.DBName + " DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci").Error
 }
 
@@ -31,7 +30,6 @@ func InitTable(cfg *database.Config) error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
 	return db.AutoMigrate(
 		&data.User{},
 		&data.Space{},
@@ -41,5 +39,8 @@ func InitTable(cfg *database.Config) error {
 		&data.Secret{},
 		&data.Pipeline{},
 		&data.Task{},
-	).Error
+		&data.TaskStep{},
+		&data.Stage{},
+		&data.StageStep{},
+	)
 }

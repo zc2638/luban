@@ -21,3 +21,4 @@ _log/
 luban
 public
 *.db
+tasklog/

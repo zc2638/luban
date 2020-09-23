@@ -6,6 +6,7 @@ package main
 import (
 	"luban/cmd/server/app"
 	"os"
+	_ "time/tzdata"
 )
 
 func main() {
