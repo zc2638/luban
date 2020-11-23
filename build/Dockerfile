@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine as builder
+FROM golang:1.15-alpine as builder
 ENV GOPROXY=https://goproxy.cn,direct
 ENV GO111MODULE=on
 ENV GOCACHE=/go/pkg/.cache/go-build

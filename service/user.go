@@ -5,6 +5,7 @@ package service
 
 import (
 	"context"
+	"github.com/zc2638/gotool/utilx"
 	"luban/pkg/database"
 	"luban/pkg/database/data"
 	"luban/pkg/errs"
@@ -61,6 +62,7 @@ func (s *userService) Create(ctx context.Context, user *data.User) error {
 		return errs.New("Duplicate username")
 	}
 	user.UserID = uuid.New()
+	user.Salt = utilx.RandomStr(6)
 	return s.db.Create(user).Error
 }
 

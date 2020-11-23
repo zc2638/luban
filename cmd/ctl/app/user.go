@@ -18,7 +18,6 @@ package app
 import (
 	"context"
 	"github.com/spf13/cobra"
-	"github.com/zc2638/gotool/utilx"
 	"luban/pkg/compile"
 	"luban/pkg/database/data"
 	"luban/pkg/errs"
@@ -67,7 +66,6 @@ func userAdd(cmd *cobra.Command, args []string) error {
 	return service.New().User().Create(context.Background(), &data.User{
 		Username: username,
 		Pwd:      password,
-		Salt:     utilx.RandomStr(6),
 	})
 }
 
