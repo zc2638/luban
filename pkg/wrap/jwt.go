@@ -1,7 +1,7 @@
 /**
  * Created by zc on 2020/6/9.
  */
-package ctr
+package wrap
 
 import (
 	"github.com/dgrijalva/jwt-go"

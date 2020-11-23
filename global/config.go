@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
 	"github.com/mitchellh/mapstructure"
+	"github.com/pkgms/go/server"
 	"github.com/spf13/viper"
 	"github.com/zc2638/drone-control/global"
-	"luban/pkg/database"
-	"luban/pkg/server"
+	"luban/global/database"
+	"net"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -24,7 +26,12 @@ type Config struct {
 func Environ() *Config {
 	// TODO 可以添加一些默认设置
 	cfg := &Config{}
+	cfg.Server.Port = ServerPort
 	cfg.Server.Secret = DefaultJwtSecret
+
+	cfg.Control.Server.Port = global.DefaultPort
+	cfg.Control.RPC.Proto = "http"
+	cfg.Control.RPC.Host = net.JoinHostPort("127.0.0.1", strconv.Itoa(cfg.Control.Server.Port))
 	return cfg
 }
 
@@ -39,7 +46,7 @@ func ParseConfig(cfgPath string) (*Config, error) {
 		viper.AddConfigPath(home)
 		viper.SetConfigName("config.yaml")
 	}
-	viper.SetEnvPrefix("LUBAN")
+	viper.SetEnvPrefix(ServerEnvPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
 	cfg := Environ()

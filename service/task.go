@@ -5,19 +5,19 @@ package service
 
 import (
 	"context"
-	"luban/pkg/ctr"
-	"luban/pkg/database"
-	"luban/pkg/database/data"
-	"luban/pkg/uuid"
+	"luban/global/database"
+	"luban/pkg/store"
+	"luban/pkg/util"
+	"luban/pkg/wrap"
 	"time"
 )
 
 type taskService struct{ service }
 
-func (s *taskService) List(ctx context.Context) ([]data.Task, error) {
-	pipeline := ctr.ContextPipelineValue(ctx)
-	var tasks []data.Task
-	db := s.db.Where(&data.Task{
+func (s *taskService) List(ctx context.Context) ([]store.Task, error) {
+	pipeline := wrap.ContextPipelineValue(ctx)
+	var tasks []store.Task
+	db := s.db.Where(&store.Task{
 		PipelineID: pipeline,
 	}).Find(&tasks)
 	if db.Error == nil || database.RecordNotFound(db.Error) {
@@ -26,12 +26,12 @@ func (s *taskService) List(ctx context.Context) ([]data.Task, error) {
 	return nil, db.Error
 }
 
-func (s *taskService) ListUnComplete(ctx context.Context) ([]data.Task, error) {
-	var tasks []data.Task
-	db := s.db.Where(&data.Task{
-		Status: data.TaskStatusPending,
-	}).Or(&data.Task{
-		Status: data.TaskStatusRunning,
+func (s *taskService) ListUnComplete(ctx context.Context) ([]store.Task, error) {
+	var tasks []store.Task
+	db := s.db.Where(&store.Task{
+		Status: store.TaskStatusPending,
+	}).Or(&store.Task{
+		Status: store.TaskStatusRunning,
 	}).Find(&tasks)
 	if db.Error == nil || database.RecordNotFound(db.Error) {
 		return tasks, nil
@@ -39,11 +39,11 @@ func (s *taskService) ListUnComplete(ctx context.Context) ([]data.Task, error) {
 	return nil, db.Error
 }
 
-func (s *taskService) Find(ctx context.Context) (*data.Task, error) {
-	pipeline := ctr.ContextPipelineValue(ctx)
-	target := ctr.ContextTaskValue(ctx)
-	var task data.Task
-	db := s.db.Where(&data.Task{
+func (s *taskService) Find(ctx context.Context) (*store.Task, error) {
+	pipeline := wrap.ContextPipelineValue(ctx)
+	target := wrap.ContextTaskValue(ctx)
+	var task store.Task
+	db := s.db.Where(&store.Task{
 		PipelineID: pipeline,
 		TaskID:     target,
 	}).First(&task)
@@ -56,7 +56,7 @@ func (s *taskService) Find(ctx context.Context) (*data.Task, error) {
 	return nil, db.Error
 }
 
-func (s *taskService) Create(ctx context.Context, task *data.Task, steps []data.TaskStep) error {
+func (s *taskService) Create(ctx context.Context, task *store.Task, steps []store.TaskStep) error {
 	s.db = s.db.Begin()
 	pipeline, err := New().Pipeline().Find(ctx)
 	if err != nil {
@@ -64,14 +64,14 @@ func (s *taskService) Create(ctx context.Context, task *data.Task, steps []data.
 	}
 	task.PipelineID = pipeline.PipelineID
 	task.Spec = pipeline.Spec
-	task.Status = data.TaskStatusPending
-	task.TaskID = uuid.New()
+	task.Status = store.TaskStatusPending
+	task.TaskID = util.UUID()
 	task.StartAt = time.Now()
 	if err := s.db.Create(task).Error; err != nil {
 		s.db.Rollback()
 		return err
 	}
-	ctx = ctr.ContextWithTask(ctx, task.TaskID)
+	ctx = wrap.ContextWithTask(ctx, task.TaskID)
 	for _, step := range steps {
 		if err := s.StepCreate(ctx, &step); err != nil {
 			s.db.Rollback()
@@ -82,7 +82,7 @@ func (s *taskService) Create(ctx context.Context, task *data.Task, steps []data.
 	return nil
 }
 
-func (s *taskService) Update(ctx context.Context, task *data.Task) error {
+func (s *taskService) Update(ctx context.Context, task *store.Task) error {
 	current, err := s.Find(ctx)
 	if err != nil {
 		return err
@@ -95,10 +95,10 @@ func (s *taskService) Update(ctx context.Context, task *data.Task) error {
 	return s.db.Save(task).Error
 }
 
-func (s *taskService) StepList(ctx context.Context) ([]data.TaskStep, error) {
-	task := ctr.ContextTaskValue(ctx)
-	var steps []data.TaskStep
-	db := s.db.Where(&data.TaskStep{
+func (s *taskService) StepList(ctx context.Context) ([]store.TaskStep, error) {
+	task := wrap.ContextTaskValue(ctx)
+	var steps []store.TaskStep
+	db := s.db.Where(&store.TaskStep{
 		TaskID: task,
 	}).Find(&steps)
 	if db.Error == nil {
@@ -110,10 +110,10 @@ func (s *taskService) StepList(ctx context.Context) ([]data.TaskStep, error) {
 	return nil, db.Error
 }
 
-func (s *taskService) StepFind(ctx context.Context, id string) (*data.TaskStep, error) {
-	task := ctr.ContextTaskValue(ctx)
-	var step data.TaskStep
-	db := s.db.Where(&data.TaskStep{
+func (s *taskService) StepFind(ctx context.Context, id string) (*store.TaskStep, error) {
+	task := wrap.ContextTaskValue(ctx)
+	var step store.TaskStep
+	db := s.db.Where(&store.TaskStep{
 		TaskID: task,
 		StepID: id,
 	}).First(&step)
@@ -126,10 +126,10 @@ func (s *taskService) StepFind(ctx context.Context, id string) (*data.TaskStep, 
 	return nil, db.Error
 }
 
-func (s *taskService) StepFindByName(ctx context.Context, name string) (*data.TaskStep, error) {
-	task := ctr.ContextTaskValue(ctx)
-	var step data.TaskStep
-	db := s.db.Where(&data.TaskStep{
+func (s *taskService) StepFindByName(ctx context.Context, name string) (*store.TaskStep, error) {
+	task := wrap.ContextTaskValue(ctx)
+	var step store.TaskStep
+	db := s.db.Where(&store.TaskStep{
 		TaskID: task,
 		Name:   name,
 	}).First(&step)
@@ -142,19 +142,19 @@ func (s *taskService) StepFindByName(ctx context.Context, name string) (*data.Ta
 	return nil, db.Error
 }
 
-func (s *taskService) StepCreate(ctx context.Context, step *data.TaskStep) error {
+func (s *taskService) StepCreate(ctx context.Context, step *store.TaskStep) error {
 	if _, err := s.StepFindByName(ctx, step.Name); err == nil {
 		return err
 	}
-	task := ctr.ContextTaskValue(ctx)
+	task := wrap.ContextTaskValue(ctx)
 	step.TaskID = task
-	step.Status = data.TaskStatusPending
-	step.StepID = uuid.New()
+	step.Status = store.TaskStatusPending
+	step.StepID = util.UUID()
 	step.StartAt = time.Now()
 	return s.db.Create(step).Error
 }
 
-func (s *taskService) StepUpdate(ctx context.Context, id string, step *data.TaskStep) error {
+func (s *taskService) StepUpdate(ctx context.Context, id string, step *store.TaskStep) error {
 	current, err := s.StepFind(ctx, id)
 	if err != nil {
 		return err
@@ -167,23 +167,23 @@ func (s *taskService) StepUpdate(ctx context.Context, id string, step *data.Task
 		return err
 	}
 	// 更新task状态
-	if step.Status == data.TaskStatusFail {
-		task := &data.Task{
-			Status: data.TaskStatusFail,
+	if step.Status == store.TaskStatusFail {
+		task := &store.Task{
+			Status: store.TaskStatusFail,
 			EndAt:  step.EndAt,
 		}
 		return s.Update(ctx, task)
 	}
-	task := ctr.ContextTaskValue(ctx)
-	var not data.TaskStep
-	db := s.db.Where(&data.TaskStep{
+	task := wrap.ContextTaskValue(ctx)
+	var not store.TaskStep
+	db := s.db.Where(&store.TaskStep{
 		TaskID: task,
-	}).Not(&data.TaskStep{
-		Status: data.TaskStatusSuccess,
+	}).Not(&store.TaskStep{
+		Status: store.TaskStatusSuccess,
 	}).First(&not)
 	if database.RecordNotFound(db.Error) {
-		task := &data.Task{
-			Status: data.TaskStatusSuccess,
+		task := &store.Task{
+			Status: store.TaskStatusSuccess,
 			EndAt:  step.EndAt,
 		}
 		return s.Update(ctx, task)

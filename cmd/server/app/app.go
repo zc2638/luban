@@ -5,11 +5,11 @@ package app
 
 import (
 	"fmt"
+	"github.com/pkgms/go/server"
 	"github.com/spf13/cobra"
 	"luban/cmd/internal/env"
 	"luban/cmd/internal/route"
 	"luban/global"
-	"luban/pkg/server"
 )
 
 var cfgFile string

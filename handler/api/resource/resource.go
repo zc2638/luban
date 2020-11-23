@@ -4,12 +4,13 @@
 package resource
 
 import (
+	"github.com/pkgms/go/ctr"
 	"luban/pkg/api/request"
 	"luban/pkg/api/response"
 	"luban/pkg/compile"
-	"luban/pkg/ctr"
-	"luban/pkg/database/data"
 	"luban/pkg/errs"
+	"luban/pkg/store"
+	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 )
@@ -67,7 +68,7 @@ func Info() http.HandlerFunc {
 func Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.ResourceParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -75,7 +76,7 @@ func Create() http.HandlerFunc {
 			ctr.BadRequest(w, errs.ErrInvalidResource.With(compile.NameError))
 			return
 		}
-		resource := &data.Resource{
+		resource := &store.Resource{
 			Name:    params.Name,
 			Desc:    params.Desc,
 			Format:  params.Format,
@@ -93,7 +94,7 @@ func Create() http.HandlerFunc {
 func Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.ResourceParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -101,7 +102,7 @@ func Update() http.HandlerFunc {
 			ctr.BadRequest(w, errs.ErrInvalidResource.With(compile.NameError))
 			return
 		}
-		resource := &data.Resource{
+		resource := &store.Resource{
 			Name:    params.Name,
 			Desc:    params.Desc,
 			Format:  params.Format,

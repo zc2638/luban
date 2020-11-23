@@ -5,7 +5,7 @@ package resource
 
 import (
 	"github.com/go-chi/chi"
-	"luban/pkg/ctr"
+	"github.com/pkgms/go/ctr"
 	"luban/service"
 	"net/http"
 )

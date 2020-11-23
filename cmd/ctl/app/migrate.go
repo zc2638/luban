@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"luban/global"
-	"luban/pkg/database/migration"
+	"luban/global/database/migration"
 )
 
 // migrateCmd represents the migrate command

@@ -4,9 +4,10 @@
 package pipeline
 
 import (
+	"github.com/pkgms/go/ctr"
 	"luban/pkg/api/request"
-	"luban/pkg/ctr"
-	"luban/pkg/database/data"
+	"luban/pkg/store"
+	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 )
@@ -36,11 +37,11 @@ func Info() http.HandlerFunc {
 func Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.PipelineParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
-		pipeline := &data.Pipeline{
+		pipeline := &store.Pipeline{
 			ResourceID: params.ResourceID,
 			Name:       params.Name,
 			Spec:       params.Spec,
@@ -56,11 +57,11 @@ func Create() http.HandlerFunc {
 func Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.PipelineParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
-		pipeline := &data.Pipeline{
+		pipeline := &store.Pipeline{
 			ResourceID: params.ResourceID,
 			Name:       params.Name,
 			Spec:       params.Spec,

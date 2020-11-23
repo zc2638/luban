@@ -6,9 +6,10 @@ package task
 import (
 	"encoding/json"
 	"github.com/drone/drone-yaml/yaml"
+	"github.com/pkgms/go/ctr"
 	"luban/pkg/api/response"
-	"luban/pkg/ctr"
-	"luban/pkg/database/data"
+	"luban/pkg/store"
+	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 )
@@ -76,9 +77,9 @@ func Create() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
-		task := &data.Task{Spec: pipeline.Spec}
+		task := &store.Task{Spec: pipeline.Spec}
 		if pipeline.ResourceID != "" {
-			ctx := ctr.ContextWithResource(r.Context(), pipeline.ResourceID)
+			ctx := wrap.ContextWithResource(r.Context(), pipeline.ResourceID)
 			resource, err := service.New().Resource().Find(ctx)
 			if err != nil {
 				ctr.BadRequest(w, err)
@@ -86,9 +87,9 @@ func Create() http.HandlerFunc {
 			}
 			task.Data = resource.Content
 		}
-		steps := make([]data.TaskStep, 0, len(spec.Steps))
+		steps := make([]store.TaskStep, 0, len(spec.Steps))
 		for _, step := range spec.Steps {
-			steps = append(steps, data.TaskStep{
+			steps = append(steps, store.TaskStep{
 				Name: step.Name,
 			})
 		}

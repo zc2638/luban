@@ -5,8 +5,8 @@ package migration
 
 import (
 	"errors"
-	"luban/pkg/database"
-	"luban/pkg/database/data"
+	"luban/global/database"
+	"luban/pkg/store"
 )
 
 // check database.
@@ -31,14 +31,14 @@ func InitTable(cfg *database.Config) error {
 		return err
 	}
 	return db.AutoMigrate(
-		&data.User{},
-		&data.Space{},
-		&data.Share{},
-		&data.Resource{},
-		&data.Version{},
-		&data.Secret{},
-		&data.Pipeline{},
-		&data.Task{},
-		&data.TaskStep{},
+		&store.User{},
+		&store.Space{},
+		&store.Share{},
+		&store.Resource{},
+		&store.Version{},
+		&store.Secret{},
+		&store.Pipeline{},
+		&store.Task{},
+		&store.TaskStep{},
 	)
 }

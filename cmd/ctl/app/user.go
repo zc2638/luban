@@ -19,8 +19,8 @@ import (
 	"context"
 	"github.com/spf13/cobra"
 	"luban/pkg/compile"
-	"luban/pkg/database/data"
 	"luban/pkg/errs"
+	"luban/pkg/store"
 	"luban/service"
 )
 
@@ -63,7 +63,7 @@ func userAdd(cmd *cobra.Command, args []string) error {
 		return compile.UsernameError
 	}
 	password := args[1]
-	return service.New().User().Create(context.Background(), &data.User{
+	return service.New().User().Create(context.Background(), &store.User{
 		Username: username,
 		Pwd:      password,
 	})

@@ -7,13 +7,13 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"github.com/pkgms/go/ctr"
 	"github.com/zc2638/drone-control/handler"
 	"luban/handler/api/auth"
 	"luban/handler/api/pipeline"
 	"luban/handler/api/resource"
 	"luban/handler/api/space"
 	"luban/handler/api/task"
-	"luban/pkg/ctr"
 	"net/http"
 )
 

@@ -5,21 +5,21 @@ package service
 
 import (
 	"context"
-	"luban/pkg/ctr"
-	"luban/pkg/database"
-	"luban/pkg/database/data"
-	"luban/pkg/uuid"
+	"luban/global/database"
+	"luban/pkg/store"
+	"luban/pkg/util"
+	"luban/pkg/wrap"
 )
 
 type spaceService struct{ service }
 
-func (s *spaceService) List(ctx context.Context) ([]data.Space, error) {
-	user, err := ctr.ContextUserFrom(ctx)
+func (s *spaceService) List(ctx context.Context) ([]store.Space, error) {
+	user, err := wrap.ContextUserFrom(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var spaces []data.Space
-	db := s.db.Where(&data.Space{
+	var spaces []store.Space
+	db := s.db.Where(&store.Space{
 		UserID: user.UserID,
 	}).Find(&spaces)
 	if db.Error == nil || database.RecordNotFound(db.Error) {
@@ -28,14 +28,14 @@ func (s *spaceService) List(ctx context.Context) ([]data.Space, error) {
 	return nil, db.Error
 }
 
-func (s *spaceService) Find(ctx context.Context) (*data.Space, error) {
-	user, err := ctr.ContextUserFrom(ctx)
+func (s *spaceService) Find(ctx context.Context) (*store.Space, error) {
+	user, err := wrap.ContextUserFrom(ctx)
 	if err != nil {
 		return nil, err
 	}
-	target := ctr.ContextSpaceValue(ctx)
-	var space data.Space
-	db := s.db.Where(&data.Space{
+	target := wrap.ContextSpaceValue(ctx)
+	var space store.Space
+	db := s.db.Where(&store.Space{
 		UserID:  user.UserID,
 		SpaceID: target,
 	}).First(&space)
@@ -48,13 +48,13 @@ func (s *spaceService) Find(ctx context.Context) (*data.Space, error) {
 	return nil, db.Error
 }
 
-func (s *spaceService) FindByName(ctx context.Context, name string) (*data.Space, error) {
-	user, err := ctr.ContextUserFrom(ctx)
+func (s *spaceService) FindByName(ctx context.Context, name string) (*store.Space, error) {
+	user, err := wrap.ContextUserFrom(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var space data.Space
-	db := s.db.Where(&data.Space{
+	var space store.Space
+	db := s.db.Where(&store.Space{
 		UserID: user.UserID,
 		Name:   name,
 	}).First(&space)
@@ -67,20 +67,20 @@ func (s *spaceService) FindByName(ctx context.Context, name string) (*data.Space
 	return nil, db.Error
 }
 
-func (s *spaceService) Create(ctx context.Context, space *data.Space) error {
-	user, err := ctr.ContextUserFrom(ctx)
+func (s *spaceService) Create(ctx context.Context, space *store.Space) error {
+	user, err := wrap.ContextUserFrom(ctx)
 	if err != nil {
 		return err
 	}
 	if _, err = s.FindByName(ctx, space.Name); err == nil {
 		return ErrExist
 	}
-	space.SpaceID = uuid.New()
+	space.SpaceID = util.UUID()
 	space.UserID = user.UserID
 	return s.db.Create(space).Error
 }
 
-func (s *spaceService) Update(ctx context.Context, space *data.Space) error {
+func (s *spaceService) Update(ctx context.Context, space *store.Space) error {
 	current, err := s.Find(ctx)
 	if err != nil {
 		return err
@@ -92,13 +92,13 @@ func (s *spaceService) Update(ctx context.Context, space *data.Space) error {
 }
 
 func (s *spaceService) Delete(ctx context.Context) error {
-	user, err := ctr.ContextUserFrom(ctx)
+	user, err := wrap.ContextUserFrom(ctx)
 	if err != nil {
 		return err
 	}
-	target := ctr.ContextSpaceValue(ctx)
-	return s.db.Where(&data.Space{
+	target := wrap.ContextSpaceValue(ctx)
+	return s.db.Where(&store.Space{
 		UserID:  user.UserID,
 		SpaceID: target,
-	}).Delete(&data.Space{}).Error
+	}).Delete(&store.Space{}).Error
 }

@@ -7,8 +7,8 @@ import (
 	"context"
 	"gorm.io/gorm"
 	"luban/global"
-	"luban/pkg/database/data"
 	"luban/pkg/errs"
+	"luban/pkg/store"
 )
 
 type Service interface {
@@ -44,16 +44,16 @@ type (
 	// UserService defines the user related operations
 	UserService interface {
 		// Find returns the current user by username
-		Find(ctx context.Context, name string) (*data.User, error)
+		Find(ctx context.Context, name string) (*store.User, error)
 
 		// FindByNameAndPwd returns the current user by username and password
-		FindByNameAndPwd(ctx context.Context, username, password string) (*data.User, error)
+		FindByNameAndPwd(ctx context.Context, username, password string) (*store.User, error)
 
 		// FindByUserID returns the current user by user id
-		FindByUserID(ctx context.Context, userID string) (*data.User, error)
+		FindByUserID(ctx context.Context, userID string) (*store.User, error)
 
 		// Create creates a user
-		Create(ctx context.Context, user *data.User) error
+		Create(ctx context.Context, user *store.User) error
 
 		// PwdReset resets the password to user
 		PwdReset(ctx context.Context, username, password string) error
@@ -62,19 +62,19 @@ type (
 	// SpaceService defines the space related operations
 	SpaceService interface {
 		// List returns the space list
-		List(ctx context.Context) ([]data.Space, error)
+		List(ctx context.Context) ([]store.Space, error)
 
 		// Find returns the current space
-		Find(ctx context.Context) (*data.Space, error)
+		Find(ctx context.Context) (*store.Space, error)
 
 		// FindByName returns the current space by name
-		FindByName(ctx context.Context, name string) (*data.Space, error)
+		FindByName(ctx context.Context, name string) (*store.Space, error)
 
 		// Create creates a space
-		Create(ctx context.Context, space *data.Space) error
+		Create(ctx context.Context, space *store.Space) error
 
 		// Update updates the space info
-		Update(ctx context.Context, space *data.Space) error
+		Update(ctx context.Context, space *store.Space) error
 
 		// Delete deletes a space
 		Delete(ctx context.Context) error
@@ -83,16 +83,16 @@ type (
 	// ResourceService defines the resource related operations
 	ResourceService interface {
 		// List returns the resource list
-		List(ctx context.Context) ([]data.Resource, error)
+		List(ctx context.Context) ([]store.Resource, error)
 
 		// Find returns the current resource
-		Find(ctx context.Context) (*data.Resource, error)
+		Find(ctx context.Context) (*store.Resource, error)
 
 		// Create creates a resource in space
-		Create(ctx context.Context, resource *data.Resource) error
+		Create(ctx context.Context, resource *store.Resource) error
 
 		// Update updates the resource info
-		Update(ctx context.Context, resource *data.Resource) error
+		Update(ctx context.Context, resource *store.Resource) error
 
 		// Delete deletes a resource
 		Delete(ctx context.Context) error
@@ -101,13 +101,13 @@ type (
 		Raw(ctx context.Context, username, space, resource string) ([]byte, error)
 
 		// VersionList returns the version resource list
-		VersionList(ctx context.Context) ([]data.Version, error)
+		VersionList(ctx context.Context) ([]store.Version, error)
 
 		// VersionFind returns the current version resource
-		VersionFind(ctx context.Context, id string) (*data.Version, error)
+		VersionFind(ctx context.Context, id string) (*store.Version, error)
 
 		// VersionCreate creates a version resource
-		VersionCreate(ctx context.Context, version *data.Version) error
+		VersionCreate(ctx context.Context, version *store.Version) error
 
 		// VersionDelete deletes a version resource
 		VersionDelete(ctx context.Context, id string) error
@@ -119,16 +119,16 @@ type (
 	// PipelineService defines the pipeline related operations
 	PipelineService interface {
 		// List returns the pipeline list
-		List(ctx context.Context) ([]data.Pipeline, error)
+		List(ctx context.Context) ([]store.Pipeline, error)
 
 		// Find returns the current pipeline
-		Find(ctx context.Context) (*data.Pipeline, error)
+		Find(ctx context.Context) (*store.Pipeline, error)
 
 		// Create creates a pipeline
-		Create(ctx context.Context, pipeline *data.Pipeline) error
+		Create(ctx context.Context, pipeline *store.Pipeline) error
 
 		// Update updates the pipeline info
-		Update(ctx context.Context, pipeline *data.Pipeline) error
+		Update(ctx context.Context, pipeline *store.Pipeline) error
 
 		// Delete deletes a pipeline
 		Delete(ctx context.Context) error
@@ -137,31 +137,31 @@ type (
 	// TaskService defines the task related operations
 	TaskService interface {
 		// List returns the task list
-		List(ctx context.Context) ([]data.Task, error)
+		List(ctx context.Context) ([]store.Task, error)
 
 		// ListUnComplete returns the not complete task list
-		ListUnComplete(ctx context.Context) ([]data.Task, error)
+		ListUnComplete(ctx context.Context) ([]store.Task, error)
 
 		// Find returns the current task
-		Find(ctx context.Context) (*data.Task, error)
+		Find(ctx context.Context) (*store.Task, error)
 
 		// Create creates a task
-		Create(ctx context.Context, task *data.Task, steps []data.TaskStep) error
+		Create(ctx context.Context, task *store.Task, steps []store.TaskStep) error
 
 		// Update updates the task info
-		Update(ctx context.Context, task *data.Task) error
+		Update(ctx context.Context, task *store.Task) error
 
 		// StepList returns the task step list
-		StepList(ctx context.Context) ([]data.TaskStep, error)
+		StepList(ctx context.Context) ([]store.TaskStep, error)
 
 		// StepFind returns the current task step
-		StepFind(ctx context.Context, id string) (*data.TaskStep, error)
+		StepFind(ctx context.Context, id string) (*store.TaskStep, error)
 
 		// StepCreate creates a task step
-		StepCreate(ctx context.Context, step *data.TaskStep) error
+		StepCreate(ctx context.Context, step *store.TaskStep) error
 
 		// StepUpdate updates the task step info
-		StepUpdate(ctx context.Context, id string, step *data.TaskStep) error
+		StepUpdate(ctx context.Context, id string, step *store.TaskStep) error
 	}
 )
 

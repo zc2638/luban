@@ -4,12 +4,13 @@
 package space
 
 import (
+	"github.com/pkgms/go/ctr"
 	"luban/pkg/api/request"
 	"luban/pkg/api/response"
 	"luban/pkg/compile"
-	"luban/pkg/ctr"
-	"luban/pkg/database/data"
 	"luban/pkg/errs"
+	"luban/pkg/store"
+	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 )
@@ -39,7 +40,7 @@ func List() http.HandlerFunc {
 func Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.SpaceParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -47,7 +48,7 @@ func Create() http.HandlerFunc {
 			ctr.BadRequest(w, errs.ErrInvalidSpace.With(compile.NameError))
 			return
 		}
-		space := &data.Space{Name: params.Name}
+		space := &store.Space{Name: params.Name}
 		if err := service.New().Space().Create(r.Context(), space); err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -59,7 +60,7 @@ func Create() http.HandlerFunc {
 func Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.SpaceParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -67,7 +68,7 @@ func Update() http.HandlerFunc {
 			ctr.BadRequest(w, errs.ErrInvalidSpace.With(compile.NameError))
 			return
 		}
-		space := &data.Space{Name: params.Name}
+		space := &store.Space{Name: params.Name}
 		if err := service.New().Space().Update(r.Context(), space); err != nil {
 			ctr.BadRequest(w, err)
 			return

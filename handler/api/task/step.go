@@ -6,10 +6,11 @@ package task
 import (
 	"context"
 	"github.com/go-chi/chi"
+	"github.com/pkgms/go/ctr"
 	"luban/pkg/api/request"
-	"luban/pkg/ctr"
-	"luban/pkg/database/data"
 	"luban/pkg/errs"
+	"luban/pkg/store"
+	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 	"time"
@@ -29,15 +30,15 @@ func StepList() http.HandlerFunc {
 func StepUpdate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.TaskStepParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
 		id := chi.URLParam(r, "step")
-		if params.Status != data.TaskStatusSuccess && params.Status != data.TaskStatusFail {
+		if params.Status != store.TaskStatusSuccess && params.Status != store.TaskStatusFail {
 			ctr.BadRequest(w, errs.New("the step status not support to complete"))
 		}
-		step := &data.TaskStep{
+		step := &store.TaskStep{
 			Status: params.Status,
 			Log:    params.Log,
 			EndAt:  time.Now(),

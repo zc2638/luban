@@ -5,12 +5,13 @@ package resource
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/pkgms/go/ctr"
 	"luban/pkg/api/request"
 	"luban/pkg/api/response"
 	"luban/pkg/compile"
-	"luban/pkg/ctr"
-	"luban/pkg/database/data"
 	"luban/pkg/errs"
+	"luban/pkg/store"
+	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 )
@@ -67,7 +68,7 @@ func VersionInfo() http.HandlerFunc {
 func VersionCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.ResourceVersionParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -75,7 +76,7 @@ func VersionCreate() http.HandlerFunc {
 			ctr.BadRequest(w, errs.ErrInvalidResourceVersion.With(compile.NameError))
 			return
 		}
-		version := &data.Version{
+		version := &store.Version{
 			Version: params.Version,
 			Desc:    params.Desc,
 		}

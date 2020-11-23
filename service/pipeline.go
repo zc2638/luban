@@ -5,18 +5,18 @@ package service
 
 import (
 	"context"
-	"luban/pkg/ctr"
-	"luban/pkg/database"
-	"luban/pkg/database/data"
-	"luban/pkg/uuid"
+	"luban/global/database"
+	"luban/pkg/store"
+	"luban/pkg/util"
+	"luban/pkg/wrap"
 )
 
 type pipelineService struct{ service }
 
-func (s *pipelineService) List(ctx context.Context) ([]data.Pipeline, error) {
-	space := ctr.ContextSpaceValue(ctx)
-	var pipelines []data.Pipeline
-	db := s.db.Where(&data.Pipeline{
+func (s *pipelineService) List(ctx context.Context) ([]store.Pipeline, error) {
+	space := wrap.ContextSpaceValue(ctx)
+	var pipelines []store.Pipeline
+	db := s.db.Where(&store.Pipeline{
 		SpaceID: space,
 	}).Find(&pipelines)
 	if db.Error == nil || database.RecordNotFound(db.Error) {
@@ -25,11 +25,11 @@ func (s *pipelineService) List(ctx context.Context) ([]data.Pipeline, error) {
 	return nil, db.Error
 }
 
-func (s *pipelineService) Find(ctx context.Context) (*data.Pipeline, error) {
-	space := ctr.ContextSpaceValue(ctx)
-	target := ctr.ContextPipelineValue(ctx)
-	var pipeline data.Pipeline
-	db := s.db.Where(&data.Pipeline{
+func (s *pipelineService) Find(ctx context.Context) (*store.Pipeline, error) {
+	space := wrap.ContextSpaceValue(ctx)
+	target := wrap.ContextPipelineValue(ctx)
+	var pipeline store.Pipeline
+	db := s.db.Where(&store.Pipeline{
 		SpaceID:    space,
 		PipelineID: target,
 	}).First(&pipeline)
@@ -42,10 +42,10 @@ func (s *pipelineService) Find(ctx context.Context) (*data.Pipeline, error) {
 	return nil, db.Error
 }
 
-func (s *pipelineService) FindByName(ctx context.Context, name string) (*data.Pipeline, error) {
-	space := ctr.ContextSpaceValue(ctx)
-	var pipeline data.Pipeline
-	db := s.db.Where(&data.Pipeline{
+func (s *pipelineService) FindByName(ctx context.Context, name string) (*store.Pipeline, error) {
+	space := wrap.ContextSpaceValue(ctx)
+	var pipeline store.Pipeline
+	db := s.db.Where(&store.Pipeline{
 		SpaceID: space,
 		Name:    name,
 	}).First(&pipeline)
@@ -58,17 +58,17 @@ func (s *pipelineService) FindByName(ctx context.Context, name string) (*data.Pi
 	return nil, db.Error
 }
 
-func (s *pipelineService) Create(ctx context.Context, pipeline *data.Pipeline) error {
+func (s *pipelineService) Create(ctx context.Context, pipeline *store.Pipeline) error {
 	if _, err := s.FindByName(ctx, pipeline.Name); err == nil {
 		return ErrExist
 	}
-	space := ctr.ContextSpaceValue(ctx)
+	space := wrap.ContextSpaceValue(ctx)
 	pipeline.SpaceID = space
-	pipeline.PipelineID = uuid.New()
+	pipeline.PipelineID = util.UUID()
 	return s.db.Create(pipeline).Error
 }
 
-func (s *pipelineService) Update(ctx context.Context, pipeline *data.Pipeline) error {
+func (s *pipelineService) Update(ctx context.Context, pipeline *store.Pipeline) error {
 	current, err := s.Find(ctx)
 	if err != nil {
 		return err
@@ -79,10 +79,10 @@ func (s *pipelineService) Update(ctx context.Context, pipeline *data.Pipeline) e
 }
 
 func (s *pipelineService) Delete(ctx context.Context) error {
-	space := ctr.ContextSpaceValue(ctx)
-	target := ctr.ContextPipelineValue(ctx)
-	return s.db.Where(&data.Pipeline{
+	space := wrap.ContextSpaceValue(ctx)
+	target := wrap.ContextPipelineValue(ctx)
+	return s.db.Where(&store.Pipeline{
 		SpaceID:    space,
 		PipelineID: target,
-	}).Delete(&data.Pipeline{}).Error
+	}).Delete(&store.Pipeline{}).Error
 }

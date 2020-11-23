@@ -1,7 +1,7 @@
 /**
  * Created by zc on 2020/8/8.
 **/
-package data
+package store
 
 import (
 	"gorm.io/gorm"

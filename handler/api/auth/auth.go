@@ -5,13 +5,14 @@ package auth
 
 import (
 	"context"
+	"github.com/pkgms/go/ctr"
 	"github.com/zc2638/gotool/utilx"
 	"luban/global"
 	"luban/pkg/api/request"
 	"luban/pkg/api/response"
 	"luban/pkg/compile"
-	"luban/pkg/ctr"
-	"luban/pkg/database/data"
+	"luban/pkg/store"
+	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 )
@@ -19,7 +20,7 @@ import (
 func Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.RegisterParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -27,7 +28,7 @@ func Register() http.HandlerFunc {
 			ctr.BadRequest(w, compile.UsernameError)
 			return
 		}
-		user := &data.User{
+		user := &store.User{
 			Username: params.Username,
 			Pwd:      params.Password,
 			Salt:     utilx.RandomStr(6),
@@ -43,7 +44,7 @@ func Register() http.HandlerFunc {
 func Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var params request.LoginParams
-		if err := ctr.JSONParseReader(r.Body, &params); err != nil {
+		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}
@@ -52,12 +53,12 @@ func Login() http.HandlerFunc {
 			ctr.BadRequest(w, err)
 			return
 		}
-		userInfo := ctr.JwtUserInfo{
+		userInfo := wrap.JwtUserInfo{
 			UserID:   user.UserID,
 			Username: user.Username,
 			Pwd:      user.Pwd,
 		}
-		token, err := ctr.JwtCreate(ctr.JwtClaims{User: userInfo}, global.Cfg().Server.Secret)
+		token, err := wrap.JwtCreate(wrap.JwtClaims{User: userInfo}, global.Cfg().Server.Secret)
 		if err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -72,7 +73,7 @@ func Login() http.HandlerFunc {
 
 func Info() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, err := ctr.ContextUserFrom(r.Context())
+		user, err := wrap.ContextUserFrom(r.Context())
 		if err != nil {
 			ctr.BadRequest(w, err)
 			return
