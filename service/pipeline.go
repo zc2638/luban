@@ -8,13 +8,13 @@ import (
 	"luban/global/database"
 	"luban/pkg/store"
 	"luban/pkg/util"
-	"luban/pkg/wrap"
+	"luban/pkg/wrapper"
 )
 
 type pipelineService struct{ service }
 
 func (s *pipelineService) List(ctx context.Context) ([]store.Pipeline, error) {
-	space := wrap.ContextSpaceValue(ctx)
+	space := wrapper.ContextSpaceValue(ctx)
 	var pipelines []store.Pipeline
 	db := s.db.Where(&store.Pipeline{
 		SpaceID: space,
@@ -26,8 +26,8 @@ func (s *pipelineService) List(ctx context.Context) ([]store.Pipeline, error) {
 }
 
 func (s *pipelineService) Find(ctx context.Context) (*store.Pipeline, error) {
-	space := wrap.ContextSpaceValue(ctx)
-	target := wrap.ContextPipelineValue(ctx)
+	space := wrapper.ContextSpaceValue(ctx)
+	target := wrapper.ContextPipelineValue(ctx)
 	var pipeline store.Pipeline
 	db := s.db.Where(&store.Pipeline{
 		SpaceID:    space,
@@ -43,7 +43,7 @@ func (s *pipelineService) Find(ctx context.Context) (*store.Pipeline, error) {
 }
 
 func (s *pipelineService) FindByName(ctx context.Context, name string) (*store.Pipeline, error) {
-	space := wrap.ContextSpaceValue(ctx)
+	space := wrapper.ContextSpaceValue(ctx)
 	var pipeline store.Pipeline
 	db := s.db.Where(&store.Pipeline{
 		SpaceID: space,
@@ -62,7 +62,7 @@ func (s *pipelineService) Create(ctx context.Context, pipeline *store.Pipeline) 
 	if _, err := s.FindByName(ctx, pipeline.Name); err == nil {
 		return ErrExist
 	}
-	space := wrap.ContextSpaceValue(ctx)
+	space := wrapper.ContextSpaceValue(ctx)
 	pipeline.SpaceID = space
 	pipeline.PipelineID = util.UUID()
 	return s.db.Create(pipeline).Error
@@ -79,8 +79,8 @@ func (s *pipelineService) Update(ctx context.Context, pipeline *store.Pipeline) 
 }
 
 func (s *pipelineService) Delete(ctx context.Context) error {
-	space := wrap.ContextSpaceValue(ctx)
-	target := wrap.ContextPipelineValue(ctx)
+	space := wrapper.ContextSpaceValue(ctx)
+	target := wrapper.ContextPipelineValue(ctx)
 	return s.db.Where(&store.Pipeline{
 		SpaceID:    space,
 		PipelineID: target,

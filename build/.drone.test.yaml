@@ -1,0 +1,30 @@
+---
+kind: pipeline
+type: docker
+name: default
+steps:
+  - name: clone
+    image: alpine/git
+    commands:
+      - 'git clone https://github.com/zc2638/mock .'
+  - name: build
+    image: 'golang:1.15-alpine'
+    environment:
+      GOPROXY: https://goproxy.io
+    commands:
+      - go build cmd/main.go
+---
+kind: pipeline
+type: docker
+name: shiyong
+steps:
+  - name: clone
+    image: alpine/git
+    commands:
+      - 'git clone https://github.com/zc2638/mock .'
+  - name: build
+    image: 'golang:1.15-alpine'
+    environment:
+      GOPROXY: https://goproxy.io
+    commands:
+      - go build cmd/main.go

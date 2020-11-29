@@ -13,32 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-package app
+package stdout
 
-import (
-	"github.com/spf13/cobra"
-	"luban/cmd/ctl/app/repo"
-	"luban/cmd/ctl/app/resource"
-	"luban/cmd/internal/env"
-)
-
-var cfgFile string
-
-func NewServerCommand() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "lubanctl",
-		Short: "luban service",
-		Long:  `Luban Service.`,
-	}
-	cmd.AddCommand(
-		NewMigrateCmd(),
-		NewConfigCmd(),
-		NewDocCmd(),
-		NewUserCmd(),
-
-		resource.NewCmd(),
-		repo.NewCmd(),
-	)
-	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", env.Config(), "config file (default is $HOME/config.yaml)")
-	return cmd
+type ResourceItem struct {
+	Name   string `json:"name"`
+	Desc   string `json:"desc"`
+	Kind   string `json:"kind"`
+	Format string `json:"format"`
+	Data   string `json:"data"`
+	Label  string `json:"label"`
 }

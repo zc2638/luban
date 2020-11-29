@@ -27,7 +27,7 @@ func InitConfig(cfg *Config) error {
 	if err := initControlConfig(&cfg.Control); err != nil {
 		return err
 	}
-	return initDatabase(&cfg.Database)
+	return InitDatabase(&cfg.Database)
 }
 
 func Cfg() *Config {
@@ -45,7 +45,7 @@ func ControlCfg() *global.Config {
 var db *gorm.DB
 
 // InitDatabase Initialize database
-func initDatabase(cfg *database.Config) error {
+func InitDatabase(cfg *database.Config) error {
 	var err error
 	db, err = database.New(cfg)
 	return err

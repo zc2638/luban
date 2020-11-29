@@ -26,13 +26,12 @@ type SpaceResultItem struct {
 }
 
 type ResourceResultItem struct {
-	ResourceID string `json:"resource_id"`
-	SpaceID    string `json:"space_id"`
-	Name       string `json:"name"`
-	Desc       string `json:"desc"`
-	Format     string `json:"format"`
-	Content    string `json:"content"`
-	Label      string `json:"label"`
+	Name   string `json:"name"`
+	Desc   string `json:"desc"`
+	Kind   string `json:"kind"`
+	Format string `json:"format"`
+	Data   string `json:"data,omitempty"`
+	Label  string `json:"label,omitempty"`
 	Timestamp
 }
 
@@ -40,6 +39,7 @@ type VersionResultItem struct {
 	VersionID  string `json:"version_id"`
 	ResourceID string `json:"resource_id"`
 	Version    string `json:"version"`
+	Kind       string `json:"kind"`
 	Format     string `json:"format"`
 	Desc       string `json:"desc"`
 	Content    string `json:"content"`

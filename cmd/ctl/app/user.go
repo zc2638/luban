@@ -31,22 +31,22 @@ func NewUserCmd() *cobra.Command {
 		Short: "user operation.",
 		Long:  `user operation.`,
 	}
-	addCmd := &cobra.Command{
-		Use:          "add",
-		Short:        "add user operation",
-		Long:         `add user operation.The first command argument is username and the second is password.`,
-		RunE:         userAdd,
-		SilenceUsage: true,
-	}
-	pwdResetCmd := &cobra.Command{
-		Use:          "pwd-reset",
-		Short:        "pwd reset operation",
-		Long:         `pwd reset operation.Reset the password to the current user.`,
-		RunE:         pwdReset,
-		SilenceUsage: true,
-	}
-	cmd.AddCommand(addCmd)
-	cmd.AddCommand(pwdResetCmd)
+	cmd.AddCommand(
+		&cobra.Command{
+			Use:          "add",
+			Short:        "add user operation",
+			Long:         `add user operation.The first command argument is username and the second is password.`,
+			RunE:         userAdd,
+			SilenceUsage: true,
+		},
+		&cobra.Command{
+			Use:          "pwd-reset",
+			Short:        "pwd reset operation",
+			Long:         `pwd reset operation.Reset the password to the current user.`,
+			RunE:         pwdReset,
+			SilenceUsage: true,
+		},
+	)
 	return cmd
 }
 

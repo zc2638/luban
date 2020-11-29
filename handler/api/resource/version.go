@@ -6,19 +6,59 @@ package resource
 import (
 	"github.com/go-chi/chi"
 	"github.com/pkgms/go/ctr"
-	"luban/pkg/api/request"
+	"github.com/zc2638/swag/endpoint"
+	"github.com/zc2638/swag/swagger"
 	"luban/pkg/api/response"
-	"luban/pkg/compile"
-	"luban/pkg/errs"
-	"luban/pkg/store"
-	"luban/pkg/wrap"
 	"luban/service"
 	"net/http"
 )
 
-func VersionList() http.HandlerFunc {
+const (
+	PathVersion     = "/resource/{resource}/version"
+	PathVersionName = "/resource/{resource}/version/{version}"
+)
+
+// VersionRoute handle resource version routing related
+func VersionRoute(doc *swagger.API) {
+	const tag = "resourceVersion"
+	doc.Tags = append(doc.Tags, swagger.Tag{
+		Name:        tag,
+		Description: "资源版本管理",
+	})
+	doc.AddEndpoint(
+		endpoint.New(
+			http.MethodGet, PathVersion,
+			endpoint.Handler(versionList()),
+			endpoint.Summary("资源版本列表"),
+			endpoint.Path("resource", "resource", "资源名称", true),
+			endpoint.ResponseSuccess(endpoint.Schema([]response.VersionResultItem{})),
+			endpoint.Tags(tag),
+		),
+		endpoint.New(
+			http.MethodGet, PathVersionName,
+			endpoint.Handler(versionInfo()),
+			endpoint.Summary("资源版本详情"),
+			endpoint.Path("resource", "resource", "资源名称", true),
+			endpoint.Path("version", "string", "资源版本", true),
+			endpoint.ResponseSuccess(endpoint.Schema(response.VersionResultItem{})),
+			endpoint.Tags(tag),
+		),
+		endpoint.New(
+			http.MethodDelete, PathVersionName,
+			endpoint.Handler(versionDelete()),
+			endpoint.Summary("资源版本删除"),
+			endpoint.Path("resource", "resource", "资源名称", true),
+			endpoint.Path("version", "string", "资源版本", true),
+			endpoint.ResponseSuccess(),
+			endpoint.Tags(tag),
+		),
+	)
+}
+
+func versionList() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		list, err := service.New().Resource().VersionList(r.Context())
+		resource := chi.URLParam(r, "resource")
+		list, err := service.New().Resource().VersionList(r.Context(), resource)
 		if err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -29,9 +69,10 @@ func VersionList() http.HandlerFunc {
 				VersionID:  v.VersionID,
 				ResourceID: v.ResourceID,
 				Version:    v.Version,
+				Kind:       v.Kind,
 				Format:     v.Format,
 				Desc:       v.Desc,
-				Content:    v.Content,
+				Content:    v.Data,
 				Timestamp: response.Timestamp{
 					CreatedTS: v.CreatedAt.Unix(),
 					UpdatedTS: v.UpdatedAt.Unix(),
@@ -42,10 +83,11 @@ func VersionList() http.HandlerFunc {
 	}
 }
 
-func VersionInfo() http.HandlerFunc {
+func versionInfo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		resource := chi.URLParam(r, "resource")
 		version := chi.URLParam(r, "version")
-		info, err := service.New().Resource().VersionFind(r.Context(), version)
+		info, err := service.New().Resource().VersionFind(r.Context(), resource, version)
 		if err != nil {
 			ctr.BadRequest(w, err)
 			return
@@ -56,7 +98,7 @@ func VersionInfo() http.HandlerFunc {
 			Version:    info.Version,
 			Format:     info.Format,
 			Desc:       info.Desc,
-			Content:    info.Content,
+			Content:    info.Data,
 			Timestamp: response.Timestamp{
 				CreatedTS: info.CreatedAt.Unix(),
 				UpdatedTS: info.UpdatedAt.Unix(),
@@ -65,33 +107,11 @@ func VersionInfo() http.HandlerFunc {
 	}
 }
 
-func VersionCreate() http.HandlerFunc {
+func versionDelete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var params request.ResourceVersionParams
-		if err := wrap.JSONParseReader(r.Body, &params); err != nil {
-			ctr.BadRequest(w, err)
-			return
-		}
-		if !compile.Name().MatchString(params.Version) {
-			ctr.BadRequest(w, errs.ErrInvalidResourceVersion.With(compile.NameError))
-			return
-		}
-		version := &store.Version{
-			Version: params.Version,
-			Desc:    params.Desc,
-		}
-		if err := service.New().Resource().VersionCreate(r.Context(), version); err != nil {
-			ctr.BadRequest(w, err)
-			return
-		}
-		ctr.Success(w)
-	}
-}
-
-func VersionDelete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+		resource := chi.URLParam(r, "resource")
 		version := chi.URLParam(r, "version")
-		if err := service.New().Resource().VersionDelete(r.Context(), version); err != nil {
+		if err := service.New().Resource().VersionDelete(r.Context(), resource, version); err != nil {
 			ctr.BadRequest(w, err)
 			return
 		}

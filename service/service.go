@@ -35,9 +35,6 @@ type Interface interface {
 
 	// Pipeline returns the PipelineService interface definition
 	Pipeline() PipelineService
-
-	// Task returns the TaskService interface definition
-	Task() TaskService
 }
 
 type (
@@ -83,10 +80,10 @@ type (
 	// ResourceService defines the resource related operations
 	ResourceService interface {
 		// List returns the resource list
-		List(ctx context.Context) ([]store.Resource, error)
+		List(ctx context.Context, kind string) ([]store.Resource, error)
 
 		// Find returns the current resource
-		Find(ctx context.Context) (*store.Resource, error)
+		Find(ctx context.Context, name string) (*store.Resource, error)
 
 		// Create creates a resource in space
 		Create(ctx context.Context, resource *store.Resource) error
@@ -95,25 +92,22 @@ type (
 		Update(ctx context.Context, resource *store.Resource) error
 
 		// Delete deletes a resource
-		Delete(ctx context.Context) error
+		Delete(ctx context.Context, name string) error
 
 		// Raw returns the current resource content
-		Raw(ctx context.Context, username, space, resource string) ([]byte, error)
+		Raw(ctx context.Context, username, resource string) ([]byte, error)
 
 		// VersionList returns the version resource list
-		VersionList(ctx context.Context) ([]store.Version, error)
+		VersionList(ctx context.Context, resource string) ([]store.Version, error)
 
 		// VersionFind returns the current version resource
-		VersionFind(ctx context.Context, id string) (*store.Version, error)
-
-		// VersionCreate creates a version resource
-		VersionCreate(ctx context.Context, version *store.Version) error
+		VersionFind(ctx context.Context, resource string, ver string) (*store.Version, error)
 
 		// VersionDelete deletes a version resource
-		VersionDelete(ctx context.Context, id string) error
+		VersionDelete(ctx context.Context, resource string, ver string) error
 
 		// VersionRaw returns the current version resource content
-		VersionRaw(ctx context.Context, username, space, resource, version string) ([]byte, error)
+		VersionRaw(ctx context.Context, username, resource, ver string) ([]byte, error)
 	}
 
 	// PipelineService defines the pipeline related operations
@@ -132,36 +126,6 @@ type (
 
 		// Delete deletes a pipeline
 		Delete(ctx context.Context) error
-	}
-
-	// TaskService defines the task related operations
-	TaskService interface {
-		// List returns the task list
-		List(ctx context.Context) ([]store.Task, error)
-
-		// ListUnComplete returns the not complete task list
-		ListUnComplete(ctx context.Context) ([]store.Task, error)
-
-		// Find returns the current task
-		Find(ctx context.Context) (*store.Task, error)
-
-		// Create creates a task
-		Create(ctx context.Context, task *store.Task, steps []store.TaskStep) error
-
-		// Update updates the task info
-		Update(ctx context.Context, task *store.Task) error
-
-		// StepList returns the task step list
-		StepList(ctx context.Context) ([]store.TaskStep, error)
-
-		// StepFind returns the current task step
-		StepFind(ctx context.Context, id string) (*store.TaskStep, error)
-
-		// StepCreate creates a task step
-		StepCreate(ctx context.Context, step *store.TaskStep) error
-
-		// StepUpdate updates the task step info
-		StepUpdate(ctx context.Context, id string, step *store.TaskStep) error
 	}
 )
 
@@ -196,12 +160,6 @@ func (s *DefaultService) Resource() ResourceService {
 
 func (s *DefaultService) Pipeline() PipelineService {
 	svc := &pipelineService{}
-	s.Init(svc)
-	return svc
-}
-
-func (s *DefaultService) Task() TaskService {
-	svc := &taskService{}
 	s.Init(svc)
 	return svc
 }

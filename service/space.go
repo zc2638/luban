@@ -8,13 +8,13 @@ import (
 	"luban/global/database"
 	"luban/pkg/store"
 	"luban/pkg/util"
-	"luban/pkg/wrap"
+	"luban/pkg/wrapper"
 )
 
 type spaceService struct{ service }
 
 func (s *spaceService) List(ctx context.Context) ([]store.Space, error) {
-	user, err := wrap.ContextUserFrom(ctx)
+	user, err := wrapper.ContextUserFrom(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -29,11 +29,11 @@ func (s *spaceService) List(ctx context.Context) ([]store.Space, error) {
 }
 
 func (s *spaceService) Find(ctx context.Context) (*store.Space, error) {
-	user, err := wrap.ContextUserFrom(ctx)
+	user, err := wrapper.ContextUserFrom(ctx)
 	if err != nil {
 		return nil, err
 	}
-	target := wrap.ContextSpaceValue(ctx)
+	target := wrapper.ContextSpaceValue(ctx)
 	var space store.Space
 	db := s.db.Where(&store.Space{
 		UserID:  user.UserID,
@@ -49,7 +49,7 @@ func (s *spaceService) Find(ctx context.Context) (*store.Space, error) {
 }
 
 func (s *spaceService) FindByName(ctx context.Context, name string) (*store.Space, error) {
-	user, err := wrap.ContextUserFrom(ctx)
+	user, err := wrapper.ContextUserFrom(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (s *spaceService) FindByName(ctx context.Context, name string) (*store.Spac
 }
 
 func (s *spaceService) Create(ctx context.Context, space *store.Space) error {
-	user, err := wrap.ContextUserFrom(ctx)
+	user, err := wrapper.ContextUserFrom(ctx)
 	if err != nil {
 		return err
 	}
@@ -92,11 +92,11 @@ func (s *spaceService) Update(ctx context.Context, space *store.Space) error {
 }
 
 func (s *spaceService) Delete(ctx context.Context) error {
-	user, err := wrap.ContextUserFrom(ctx)
+	user, err := wrapper.ContextUserFrom(ctx)
 	if err != nil {
 		return err
 	}
-	target := wrap.ContextSpaceValue(ctx)
+	target := wrapper.ContextSpaceValue(ctx)
 	return s.db.Where(&store.Space{
 		UserID:  user.UserID,
 		SpaceID: target,

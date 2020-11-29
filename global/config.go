@@ -11,9 +11,8 @@ import (
 	"github.com/spf13/viper"
 	"github.com/zc2638/drone-control/global"
 	"luban/global/database"
-	"net"
 	"os"
-	"strconv"
+	"path/filepath"
 	"strings"
 )
 
@@ -28,24 +27,21 @@ func Environ() *Config {
 	cfg := &Config{}
 	cfg.Server.Port = ServerPort
 	cfg.Server.Secret = DefaultJwtSecret
-
-	cfg.Control.Server.Port = global.DefaultPort
-	cfg.Control.RPC.Proto = "http"
-	cfg.Control.RPC.Host = net.JoinHostPort("127.0.0.1", strconv.Itoa(cfg.Control.Server.Port))
+	cfg.Control = *global.Environ()
+	cfg.Control.RPC.Secret = DefaultJwtSecret
 	return cfg
 }
 
 func ParseConfig(cfgPath string) (*Config, error) {
-	if cfgPath != "" {
-		viper.SetConfigFile(cfgPath)
-	} else {
+	if cfgPath == "" {
 		home, err := homedir.Dir()
 		if err != nil {
 			return nil, err
 		}
-		viper.AddConfigPath(home)
-		viper.SetConfigName("config.yaml")
+		cfgPath = filepath.Join(home, ".luban/config")
+		viper.SetConfigType("yaml")
 	}
+	viper.SetConfigFile(cfgPath)
 	viper.SetEnvPrefix(ServerEnvPrefix)
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	viper.AutomaticEnv()
@@ -57,7 +53,6 @@ func ParseConfig(cfgPath string) (*Config, error) {
 		}
 		return nil, err
 	}
-	fmt.Println("Using config file:", viper.ConfigFileUsed())
 	err := viper.Unmarshal(cfg, func(dc *mapstructure.DecoderConfig) {
 		dc.TagName = "json"
 	})

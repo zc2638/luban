@@ -8,10 +8,8 @@ const (
 	ServerEnvPrefix = "LUBAN"
 )
 
-const DefaultPath = "config.yaml"
-
 const HeaderTokenKey = "Luban-Token"
 
-const DefaultJwtSecret = "Luban"
+const DefaultJwtSecret = "luban"
 
 const PathTaskLog = "tasklog"

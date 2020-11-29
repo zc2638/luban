@@ -4,7 +4,7 @@
 package database
 
 import (
-	"github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -12,28 +12,23 @@ import (
 )
 
 type Config struct {
-	Addr     string `json:"addr" yaml:"addr"`
-	Username string `json:"username" yaml:"username"`
-	Password string `json:"password" yaml:"password"`
-	DBName   string `json:"dbname" yaml:"dbname"`
-	Debug    bool   `json:"debug" yaml:"debug"`
-}
-
-func (c *Config) Clone() *Config {
-	return &Config{
-		Addr:     c.Addr,
-		Username: c.Username,
-		Password: c.Password,
-		DBName:   c.DBName,
-		Debug:    c.Debug,
-	}
+	Driver     string `json:"driver"`
+	Datasource string `json:"datasource"`
+	Debug      bool   `json:"debug"`
 }
 
 func New(cfg *Config) (*gorm.DB, error) {
-	// TODO select driver by config
-	cfg.Debug = true
+	var dialector gorm.Dialector
+	if cfg.Driver == "mysql" {
+		dialector = mysql.Open(cfg.Datasource)
+	} else {
+		if cfg.Datasource == "" {
+			cfg.Datasource = "luban.db"
+		}
+		dialector = sqlite.Open(cfg.Datasource)
+	}
 	db, err := gorm.Open(
-		sqlite.Open("luban.db"),
+		dialector,
 		&gorm.Config{
 			SkipDefaultTransaction: true,
 			NamingStrategy: schema.NamingStrategy{
@@ -55,18 +50,4 @@ func New(cfg *Config) (*gorm.DB, error) {
 		db = db.Debug()
 	}
 	return db, nil
-}
-
-func buildMysqlDsn(cfg *Config) string {
-	config := mysql.Config{
-		Addr:                 cfg.Addr,
-		User:                 cfg.Username,
-		Passwd:               cfg.Password,
-		DBName:               cfg.DBName,
-		Collation:            "utf8mb4_general_ci",
-		ParseTime:            true,
-		Loc:                  time.UTC,
-		AllowNativePasswords: true,
-	}
-	return config.FormatDSN()
 }

@@ -1,7 +1,7 @@
 /**
  * Created by zc on 2020/6/10.
  */
-package wrap
+package wrapper
 
 import (
 	"context"
@@ -30,6 +30,11 @@ func ContextUserFrom(ctx context.Context) (*JwtUserInfo, error) {
 		return nil, errs.ErrUnauthorized
 	}
 	return user, nil
+}
+
+// ContextUser returns the context of the default user value is set
+func ContextUser() context.Context {
+	return ContextWithUser(context.Background(), &JwtUserInfo{})
 }
 
 // ContextWithSpace returns a copy of parent in which the space value is set
