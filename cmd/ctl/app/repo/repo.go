@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/drone/drone/core"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/zc2638/drone-control/client"
 	"github.com/zc2638/drone-control/handler/api"
 	"io/ioutil"
@@ -102,10 +103,18 @@ func NewCmd() *cobra.Command {
 	return cmd
 }
 
-const host = "http://localhost:2639/api"
+const controlHostEnv = "LUBAN_CONTROL_HOST"
+
+func getHost() string {
+	host := viper.GetString(controlHostEnv)
+	if host == "" {
+		host = "http://127.0.0.1:2639/api"
+	}
+	return host
+}
 
 func list(cmd *cobra.Command, args []string) error {
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	list, err := c.Repo("default", "").List()
 	if err != nil {
 		return err
@@ -122,7 +131,7 @@ func get(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return errors.New("repo name not found")
 	}
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	data, err := c.Repo("default", args[0]).Info()
 	if err != nil {
 		return err
@@ -146,7 +155,7 @@ func apply(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	return c.Repo("default", "").Apply(&api.RepoParams{
 		Namespace: "default",
 		Name:      args[0],
@@ -158,7 +167,7 @@ func del(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return errors.New("repo name is not found")
 	}
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	return c.Repo("default", args[0]).Delete()
 }
 
@@ -166,7 +175,7 @@ func run(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return errors.New("repo name not found")
 	}
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	return c.Build("default", args[0]).Run()
 }
 
@@ -174,7 +183,7 @@ func record(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return errors.New("repo name is not found")
 	}
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	list, err := c.Build("default", args[0]).List()
 	if err != nil {
 		return err
@@ -200,7 +209,7 @@ func stage(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return errors.New("build number parse failed")
 	}
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	build, err := c.Build("default", args[0]).Info(number)
 	if err != nil {
 		return err
@@ -248,7 +257,7 @@ func logs(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	c := client.New(client.Config{Host: host})
+	c := client.New(client.Config{Host: getHost()})
 	b, err := c.Build("default", args[0]).Log(build, stage, step)
 	if err != nil {
 		return err

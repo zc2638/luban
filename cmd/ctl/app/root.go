@@ -17,6 +17,7 @@ package app
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"luban/cmd/ctl/app/repo"
 	"luban/cmd/ctl/app/resource"
 	"luban/cmd/internal/env"
@@ -25,6 +26,7 @@ import (
 var cfgFile string
 
 func NewServerCommand() *cobra.Command {
+	viper.AutomaticEnv()
 	cmd := &cobra.Command{
 		Use:   "lubanctl",
 		Short: "luban service",

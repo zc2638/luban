@@ -13,20 +13,20 @@ require (
 	github.com/go-chi/cors v1.1.1
 	github.com/go-chi/docgen v1.0.5
 	github.com/go-resty/resty/v2 v2.3.0
-	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/uuid v1.1.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.1.2
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.0.1 // indirect
 	github.com/pkg/errors v0.8.1
-	github.com/pkgms/go v0.0.0-20201120025240-76ac05b9c0ba
+	github.com/pkgms/go v0.0.0-20201130015421-a02d9a6f787d
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.4.0
 	github.com/zc2638/drone-control v0.0.0-20201129151939-fedca8670b03
 	github.com/zc2638/gotool v0.0.0-20200528080342-200e82def869
 	github.com/zc2638/swag v0.1.2
+	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	gopkg.in/yaml.v2 v2.2.8
 	gorm.io/driver/mysql v1.0.3
 	gorm.io/driver/sqlite v1.1.3
