@@ -4,10 +4,12 @@
 package database
 
 import (
+	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"luban/pkg/store"
 	"time"
 )
 
@@ -48,6 +50,18 @@ func New(cfg *Config) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(time.Hour * 6) // 连接最长存活时间
 	if cfg.Debug {
 		db = db.Debug()
+	}
+	if err := db.AutoMigrate(
+		&store.User{},
+		&store.Space{},
+		&store.Share{},
+		&store.Resource{},
+		&store.Version{},
+		&store.Secret{},
+		&store.Pipeline{},
+	); err != nil {
+		fmt.Println("migration table failed")
+		return nil, err
 	}
 	return db, nil
 }

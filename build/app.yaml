@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: luban-server
+  namespace: luban
+spec:
+  type: NodePort
+  ports:
+    - port: 2638
+      nodePort: 32638
+  selector:
+    app: luban-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: luban
+  labels:
+    app: luban
+  namespace: luban
+spec:
+  selector:
+    matchLabels:
+      app: luban
+  template:
+    metadata:
+      labels:
+        app: luban
+    spec:
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+        - name: registry
+      containers:
+        - name: luban
+          image: harbor.daocloud.cn/zc/luban:v0.0.1
+          ports:
+            - containerPort: 2638
+          resources:
+            requests:
+              cpu: 0.5
+              memory: "500Mi"
+            limits:
+              cpu: 0.5
+              memory: "500Mi"
+---
+apiVersion: v1
+data:
+  .dockerconfigjson: ew0KICJhdXRocyI6IHsNCiAgImhhcmJvci5kYW9jbG91ZC5jbiI6IHsNCiAgICJhdXRoIjogImFYTjBhVzg2UW1WcE0zUnBLbWxxWlRaamFHVnAiDQogIH0sDQogICJyZWdpc3RyeS5kYW9jbG91ZC5jbiI6IHsNCiAgICJhdXRoIjogImFYTjBhVzg2UW1WcE0zUnBLbWxxWlRaamFHVnAiDQogIH0NCiB9LA0KICJIdHRwSGVhZGVycyI6IHsNCiAgIlVzZXItQWdlbnQiOiAiRG9ja2VyLUNsaWVudC8xOS4wMy4xMiAobGludXgpIg0KIH0NCn0=
+kind: Secret
+metadata:
+  name: daocloud-registry
+  namespace: luban
+type: kubernetes.io/dockerconfigjson

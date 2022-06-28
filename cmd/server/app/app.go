@@ -4,6 +4,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/pkgms/go/server"
@@ -12,6 +13,7 @@ import (
 	control "github.com/zc2638/drone-control/global"
 	"github.com/zc2638/drone-control/handler"
 	"github.com/zc2638/drone-control/store"
+	"golang.org/x/sync/errgroup"
 	"luban/cmd/internal/env"
 	"luban/cmd/internal/route"
 	"luban/global"
@@ -27,6 +29,7 @@ func NewServerCommand() *cobra.Command {
 		RunE:         run,
 		SilenceUsage: true,
 	}
+	cmd.AddCommand(NewConfigCmd())
 	cmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", env.Config(), "config file (default is $HOME/config.yaml)")
 	return cmd
 }
@@ -41,10 +44,17 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	//go runControl(cfg.Control)
-	s := server.New(&cfg.Server)
-	s.Handler = route.New()
-	return s.Run()
+	g := errgroup.Group{}
+	g.Go(func() error {
+		return runControl(cfg.Control)
+	})
+	g.Go(func() error {
+		s := server.New(&cfg.Server)
+		s.Handler = route.New()
+		fmt.Println("Luban Server Listen on", s.Addr)
+		return s.Run(context.Background())
+	})
+	return g.Wait()
 }
 
 func runControl(cfg control.Config) error {
@@ -63,5 +73,5 @@ func runControl(cfg control.Config) error {
 	s := server.New(&cfg.Server)
 	s.Handler = r
 	fmt.Println("Luban Control Listen on", s.Addr)
-	return s.Run()
+	return s.Run(context.Background())
 }
